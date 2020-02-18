@@ -7,6 +7,7 @@ import { NoteType } from '../core/enums/appEnum'
 import { Theme } from 'react-native-paper'
 import { observer, inject } from 'mobx-react'
 import { withTheme } from 'react-native-paper'
+import { HeaderStore } from '../core/stores/headerStore'
 
 type IHomeState = {
   showAdd: boolean
@@ -14,9 +15,15 @@ type IHomeState = {
   screenHeight: number
 }
 
+interface IHomeProps {
+  navigation: any
+  headerStore: HeaderStore
+  theme: Theme
+}
+
 @inject('headerStore')
 @observer
-class Home extends React.Component<any, IHomeState> {
+class Home extends React.Component<IHomeProps, IHomeState> {
   constructor(props: any) {
     super(props)
     this.state = {
@@ -24,8 +31,6 @@ class Home extends React.Component<any, IHomeState> {
       screenWidth: Math.round(Dimensions.get('window').width),
       screenHeight: Math.round(Dimensions.get('window').height),
     }
-
-    console.log(this.props.headerStore.header.showCalc)
   }
 
   // componentDidMount = () => {
@@ -52,12 +57,10 @@ class Home extends React.Component<any, IHomeState> {
   }
 
   addNoteClicked = (type: NoteType) => {
-    this.props.navigation.navigate('Note', {
-      edit: true,
-      add: false,
-      type: type,
-      title: 'New Note',
-    })
+    this.props.headerStore.header.edit = true
+    this.props.headerStore.header.type = type
+    this.props.headerStore.header.title = 'New Note'
+    this.props.navigation.navigate('Note')
   }
 
   hideOptions() {

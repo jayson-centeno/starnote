@@ -1,38 +1,32 @@
 import React, { Component } from 'react'
 import globalStyle from '../../globalStyle'
-import { View, TextInput, TouchableNativeFeedback } from 'react-native'
+import { View, TextInput, TouchableNativeFeedback, Keyboard } from 'react-native'
 import Icon from '../Icon'
+import { inject, observer } from 'mobx-react'
+import { withTheme } from 'react-native-paper'
+import { Theme } from 'react-native-paper'
+import { HeaderStore } from 'app/core/stores/headerStore'
 
 interface IHeaderTitleProps {
   title: string
   navigation: any
+  headerStore: HeaderStore
+  theme: Theme
 }
 
 interface IHeaderTitleState {
-  isEditMode: boolean
+  edit: boolean
   lastPress: number
 }
 
-export default class HeaderTitle extends Component<IHeaderTitleProps, IHeaderTitleState> {
-  constructor(props: IHeaderTitleProps) {
+@inject('headerStore')
+@observer
+class HeaderTitle extends Component<IHeaderTitleProps, IHeaderTitleState> {
+  constructor(props: any) {
     super(props)
-    this.state = {
-      isEditMode: false,
-      lastPress: 0,
-    }
-  }
 
-  editClicked = () => {
-    var delta = new Date().getTime() - this.state.lastPress
-
-    if (delta < 400) {
-      this.setState(() => {
-        return { isEditMode: true }
-      })
-    }
-
-    this.setState(() => {
-      return { lastPress: new Date().getTime() }
+    Keyboard.addListener('keyboardDidHide', () => {
+      this.saveRecord()
     })
   }
 
@@ -41,20 +35,33 @@ export default class HeaderTitle extends Component<IHeaderTitleProps, IHeaderTit
   }
 
   saveClicked = () => {
-    this.setState(() => {
-      return { isEditMode: false }
-    })
+    Keyboard.dismiss()
+    this.saveRecord()
+  }
+
+  saveRecord = () => {
+    this.props.headerStore.header.edit = false
+  }
+
+  onFocus = () => {
+    this.props.headerStore.header.edit = true
+  }
+
+  get title() {
+    return this.props.headerStore.header.title
   }
 
   renderInput = (title: string) => {
     return (
       <TextInput
         defaultValue={title}
+        onFocus={() => this.onFocus()}
         disableFullscreenUI={true}
         autoFocus={true}
-        onBlur={() => this.saveClicked()}
+        selectTextOnFocus={true}
         style={{
           height: 30,
+          width: 280,
           color: '#fff',
           backgroundColor: '#000',
           paddingLeft: 5,
@@ -69,7 +76,7 @@ export default class HeaderTitle extends Component<IHeaderTitleProps, IHeaderTit
   }
 
   renderUpdate = () => {
-    if (this.state.isEditMode) {
+    if (this.props.headerStore.header.edit) {
       return (
         <TouchableNativeFeedback onPress={() => this.saveClicked()}>
           <Icon name="done" color="#ffff" />
@@ -85,8 +92,6 @@ export default class HeaderTitle extends Component<IHeaderTitleProps, IHeaderTit
   }
 
   render() {
-    const title = this.props.title
-
     return (
       <View
         style={{
@@ -105,9 +110,11 @@ export default class HeaderTitle extends Component<IHeaderTitleProps, IHeaderTit
           >
             {this.renderUpdate()}
           </View>
-          <View style={{ marginRight: 5 }}>{this.renderInput(title)}</View>
+          <View style={{ marginRight: 5 }}>{this.renderInput(this.title)}</View>
         </View>
       </View>
     )
   }
 }
+
+export default withTheme(HeaderTitle)

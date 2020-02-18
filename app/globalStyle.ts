@@ -27,7 +27,7 @@ export default StyleSheet.create({
   },
   innerScreen: {
     paddingVertical: 10,
-    paddingHorizontal: 14,
+    paddingHorizontal: 5,
   },
   centerElement: {
     justifyContent: 'center',

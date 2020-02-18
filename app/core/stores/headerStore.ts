@@ -1,18 +1,16 @@
 import { observable } from 'mobx'
+import { NoteType } from '../enums/appEnum'
 
 const defaults = {
   loading: false,
   errors: null,
   showCalc: false,
-  Table: {
-    data: [],
-    loading: false,
-    errors: null,
-    totalRecordCount: 0,
-  },
+  edit: false,
+  type: NoteType.Note,
+  title: '',
 }
 
-class HeaderStore {
+export class HeaderStore {
   @observable header = defaults
 }
 
