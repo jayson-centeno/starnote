@@ -8,6 +8,9 @@ import { Theme } from 'react-native-paper'
 import { observer, inject } from 'mobx-react'
 import { withTheme } from 'react-native-paper'
 import { HeaderStore } from '../core/stores/headerStore'
+import NoteService from '../core/services/noteService'
+import NoteModel from '../core/models/note'
+import { INoteService } from '../core/interfaces/appInterface'
 
 type IHomeState = {
   showAdd: boolean
@@ -24,6 +27,8 @@ interface IHomeProps {
 @inject('headerStore')
 @observer
 class Home extends React.Component<IHomeProps, IHomeState> {
+  noteService: INoteService
+
   constructor(props: any) {
     super(props)
     this.state = {
@@ -31,6 +36,28 @@ class Home extends React.Component<IHomeProps, IHomeState> {
       screenWidth: Math.round(Dimensions.get('window').width),
       screenHeight: Math.round(Dimensions.get('window').height),
     }
+
+    this.noteService = new NoteService()
+
+    // this.getAll()
+    // this.add()
+  }
+
+  async add() {
+    // let model = new NoteModel()
+    // model.content = 'test'
+    // model.title = 'testing 123'
+    // model.type = NoteType.Note
+    // const result = await this.noteService.Add<NoteModel>(model)
+    // console.log(result)
+
+    var resutl = await this.noteService.Delete(null)
+    console.log(resutl)
+  }
+
+  async getAll() {
+    var all = await this.noteService.GetAll<NoteModel>()
+    console.log(all)
   }
 
   // componentDidMount = () => {
