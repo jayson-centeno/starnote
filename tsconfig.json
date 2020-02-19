@@ -17,7 +17,11 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "baseUrl": ".",
+    "types": [
+      "reflect-metadata"
+    ],
     "typeRoots": [
       "./app/core/types",
       "./node_modules/@types"

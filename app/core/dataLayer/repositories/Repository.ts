@@ -1,6 +1,9 @@
 import DatabaseLayer from '../DatabaseLayer'
+import { IRepository } from 'app/core/interfaces/appInterface'
+import { injectable } from 'inversify'
 
-export default class Repository {
+@injectable()
+export default class Repository implements IRepository {
   public databaseLayer: DatabaseLayer
 
   constructor(databaseLayer: DatabaseLayer) {
@@ -17,9 +20,7 @@ export default class Repository {
 
   async insert(_obj: any) {
     return await this.databaseLayer.insert(_obj).then(
-      (res: any) => {
-        return res
-      },
+      (res: any) => res,
       error => {
         console.log(error)
       }
@@ -30,7 +31,7 @@ export default class Repository {
     return await this.databaseLayer.update(_obj)
   }
 
-  async destroy(id: any) {
+  async destroy({ id }: any) {
     return await this.databaseLayer.destroy(id)
   }
 

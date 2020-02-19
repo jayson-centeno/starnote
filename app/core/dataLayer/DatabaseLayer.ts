@@ -86,7 +86,14 @@ export default class DatabaseLayer {
     const sql = QueryBuilder.update(this.tableName, obj)
     const { id, ...props } = obj
     const params = Object.values(props)
-    return await this.executeSql(sql, [...params, id])
+    return await this.executeSql(sql, [...params, id]).then(
+      resul => {
+        return DataTypes.toModelValue(this.columnMapping, obj)
+      },
+      error => {
+        console.log(error)
+      }
+    )
   }
 
   async bulkInsertOrReplace(objs: any[]): Promise<any> {

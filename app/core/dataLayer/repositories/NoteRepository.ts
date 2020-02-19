@@ -2,10 +2,13 @@ import Repository from './Repository'
 import * as SQLite from 'expo-sqlite'
 import { types } from '../DataTypes'
 import DatabaseLayer from '../DatabaseLayer'
+import { INoteRepository } from 'app/core/interfaces/appInterface'
+import { injectable } from 'inversify'
 
-export default class NoteRepository extends Repository {
-  constructor() {
-    super(new DatabaseLayer(NoteRepository.database, NoteRepository.tableName, NoteRepository.columnMapping))
+@injectable()
+export default class NoteRepository extends Repository implements INoteRepository {
+  constructor(databaseLayer: DatabaseLayer) {
+    super(databaseLayer)
   }
 
   static get database() {

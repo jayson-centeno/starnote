@@ -1,3 +1,4 @@
+import './app/core/di/bootstrap'
 import React from 'react'
 import { Provider } from 'mobx-react'
 import { Provider as PaperProvider } from 'react-native-paper'

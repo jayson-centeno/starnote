@@ -8,9 +8,9 @@ import { Theme } from 'react-native-paper'
 import { observer, inject } from 'mobx-react'
 import { withTheme } from 'react-native-paper'
 import { HeaderStore } from '../core/stores/headerStore'
-import NoteService from '../core/services/noteService'
 import NoteModel from '../core/models/note'
 import { INoteService } from '../core/interfaces/appInterface'
+import { resolve } from 'inversify-react'
 
 type IHomeState = {
   showAdd: boolean
@@ -27,8 +27,6 @@ interface IHomeProps {
 @inject('headerStore')
 @observer
 class Home extends React.Component<IHomeProps, IHomeState> {
-  noteService: INoteService
-
   constructor(props: any) {
     super(props)
     this.state = {
@@ -36,29 +34,48 @@ class Home extends React.Component<IHomeProps, IHomeState> {
       screenWidth: Math.round(Dimensions.get('window').width),
       screenHeight: Math.round(Dimensions.get('window').height),
     }
+    // this.add()
+    // this.get()
+    // this.update()
 
-    this.noteService = new NoteService()
+    this.props.headerStore.getNotes()
 
     // this.getAll()
-    // this.add()
   }
 
-  async add() {
-    // let model = new NoteModel()
-    // model.content = 'test'
-    // model.title = 'testing 123'
-    // model.type = NoteType.Note
-    // const result = await this.noteService.Add<NoteModel>(model)
-    // console.log(result)
+  // async add() {
+  //   let model = new NoteModel()
+  //   model.content = 'test 123'
+  //   model.title = 'my new test 123'
+  //   model.type = NoteType.Note
+  //   const result = await this.noteService.Add(model)
+  //   console.log(result)
+  // }
 
-    var resutl = await this.noteService.Delete(null)
-    console.log(resutl)
-  }
+  // async update() {
+  //   let model = new NoteModel()
+  //   model.id = 1
+  //   model.content = 'test 5134'
+  //   model.title = 'my new test 12312'
+  //   model.type = NoteType.Note
+  //   const result = await this.noteService.Update(model)
+  //   console.log(result)
+  // }
 
-  async getAll() {
-    var all = await this.noteService.GetAll<NoteModel>()
-    console.log(all)
-  }
+  // async delete() {
+  //   var resutl = await this.noteService.DeleteById(1)
+  //   console.log(resutl)
+  // }
+
+  // async getAll() {
+  //   var all = await this.noteService.GetAll()
+  //   console.log(all)
+  // }
+
+  // async get() {
+  //   var all = await this.noteService.Get(1)
+  //   console.log(all.data)
+  // }
 
   // componentDidMount = () => {
   //   Dimensions.addEventListener('change', e => {
