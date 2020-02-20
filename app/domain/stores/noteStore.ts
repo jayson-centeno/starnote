@@ -51,8 +51,9 @@ export class NoteStore {
     }
 
     this.header.loading = true
-    var all = await this.noteService.getAll()
+    var all = await this.noteService.getAll({ order: 'modifiedDate DESC' })
     this.header.loading = false
+    // console.log(all)
     if (all && all.data.length > 0) {
       this.header.notes = all.data.map((model: any) => new NoteModel({ ...model }))
     } else {
@@ -70,7 +71,6 @@ export class NoteStore {
     this.header.loading = false
     this.header.isEditing = false
     this.header.isNew = false
-    this.loadNotes()
 
     if (result.successful) {
       return true
@@ -86,10 +86,13 @@ export class NoteStore {
 
     this.header.loading = true
     if (this.header.noteModel.id === null || this.header.noteModel.id === 0 || this.header.noteModel.id === undefined) {
+      this.header.noteModel.createDate = Date.now()
+      this.header.noteModel.modifiedDate = Date.now()
       var result = await this.noteService.add(<NoteModel>{ ...this.header.noteModel })
       if (!result.successful) {
       }
     } else {
+      this.header.noteModel.modifiedDate = Date.now()
       var result = await this.noteService.update(<NoteModel>{ ...this.header.noteModel })
       if (!result.successful) {
       }
@@ -97,8 +100,6 @@ export class NoteStore {
 
     this.header.isEditing = false
     this.header.loading = false
-
-    this.loadNotes()
   }
 }
 

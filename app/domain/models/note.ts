@@ -7,21 +7,27 @@ export default class NoteModel {
     content,
     type,
     deleted,
-    timestamp,
+    createDate,
+    modifiedDate,
+    rank,
   }: {
     id?: number
     title: string
     content?: string
     type: NoteType
     deleted?: boolean
-    timestamp?: number
+    createDate?: number
+    modifiedDate?: number
+    rank?: number
   }) {
     this.id = id
     this.title = title
     this.content = content
     this.type = type
     this.deleted = deleted
-    this.timestamp = timestamp
+    this.createDate = createDate
+    this.modifiedDate = modifiedDate
+    this.rank = rank
   }
 
   id?: number
@@ -29,5 +35,7 @@ export default class NoteModel {
   content?: string = ''
   type: NoteType = NoteType.Note
   deleted?: boolean
-  timestamp?: number
+  createDate?: number
+  modifiedDate?: number
+  rank?: number
 }

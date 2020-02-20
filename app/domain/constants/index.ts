@@ -22,6 +22,7 @@ export const STORES = {
 }
 
 export const DIName = {
+  Repository: 'IRepository',
   NoteService: 'INoteService',
-  NoreRepository: 'INoteRepository',
+  NoteRepository: 'INoteRepository',
 }

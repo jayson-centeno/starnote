@@ -2,13 +2,11 @@ export interface IResult<T> {
   successful: boolean
   error: any
   data: any
-  otherData: any
 }
 
 export interface IResultNoReturn {
   successful: boolean
   error: any
-  otherData: any
 }
 
 export interface ICrudService<T> {
@@ -17,7 +15,7 @@ export interface ICrudService<T> {
   delete(model: T): Promise<IResultNoReturn>
   deleteById(id: any): Promise<IResultNoReturn>
   get(id: number): Promise<IResult<T>>
-  getAll(): Promise<IResult<T>>
+  getAll(options: any): Promise<IResult<T>>
   dropTable(): Promise<IResultNoReturn>
 }
 

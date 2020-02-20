@@ -11,7 +11,7 @@ import { DIName } from '../constants'
 
 const container = new Container()
 container
-  .bind<INoteRepository>(DIName.NoreRepository)
+  .bind<INoteRepository>(DIName.NoteRepository)
   .toConstantValue(
     new NoteRepository(
       new DatabaseLayer(NoteRepository.database, NoteRepository.tableName, NoteRepository.columnMapping)
@@ -19,9 +19,10 @@ container
   )
 
 container
-  .bind<IRepository>('IRepository')
-  .to(Repository)
-  .inSingletonScope()
+  .bind<IRepository>(DIName.Repository)
+  .toConstantValue(
+    new Repository(new DatabaseLayer(NoteRepository.database, NoteRepository.tableName, NoteRepository.columnMapping))
+  )
 
 container.bind<INoteService<NoteModel>>(DIName.NoteService).to(NoteService)
 

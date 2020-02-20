@@ -26,7 +26,9 @@ export default class NoteRepository extends Repository implements INoteRepositor
       content: { type: types.TEXT },
       type: { type: types.NUMERIC, default: () => 0 },
       deleted: { type: types.BOOLEAN, default: () => false },
-      timestamp: { type: types.INTEGER, default: () => Date.now() },
+      rank: { type: types.NUMERIC, default: () => 0 },
+      createDate: { type: types.INTEGER, default: () => Date.now() },
+      modifiedDate: { type: types.INTEGER, default: () => Date.now() },
     }
   }
 }

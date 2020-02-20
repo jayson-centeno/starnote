@@ -15,8 +15,7 @@ export default class BaseService<T> implements ICrudService<T> {
       return <IResult<T>>{
         successful: true,
         error: null,
-        data: <T>{},
-        otherData: result,
+        data: result,
       }
     } catch (e) {
       return <IResult<T>>{
@@ -33,7 +32,6 @@ export default class BaseService<T> implements ICrudService<T> {
         successful: true,
         error: null,
         data: result,
-        otherData: result,
       }
     } catch (e) {
       return <IResult<T>>{
@@ -44,20 +42,18 @@ export default class BaseService<T> implements ICrudService<T> {
   }
 
   public async delete(model: T): Promise<IResultNoReturn> {
-    let result = await this.repository.destroy(model)
+    await this.repository.destroy(model)
     return <IResultNoReturn>{
       successful: true,
       error: null,
-      otherData: result,
     }
   }
 
   public async deleteById(id: any): Promise<IResultNoReturn> {
-    let result = await this.repository.destroy(id)
+    await this.repository.destroy(id)
     return <IResultNoReturn>{
       successful: true,
       error: null,
-      otherData: result,
     }
   }
 
@@ -67,7 +63,6 @@ export default class BaseService<T> implements ICrudService<T> {
       successful: true,
       error: null,
       data: result,
-      otherData: result,
     }
   }
 
@@ -77,16 +72,14 @@ export default class BaseService<T> implements ICrudService<T> {
       successful: true,
       error: null,
       data: result,
-      otherData: result,
     }
   }
 
   public async dropTable(): Promise<IResultNoReturn> {
-    let result = await this.repository.dropTable()
+    await this.repository.dropTable()
     return <IResultNoReturn>{
       successful: true,
       error: null,
-      otherData: result,
     }
   }
 }

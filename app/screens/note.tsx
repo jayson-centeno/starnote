@@ -36,9 +36,6 @@ class Note extends Component<INoteProps, any> {
     if (value) {
       const result = await this.props.noteStore.delete(this.props.noteStore.header.noteModel)
       if (result) {
-        this.props.noteStore.header.isEditing = false
-        this.props.noteStore.header.isNew = false
-        this.props.noteStore.loadNotes()
         this.props.navigation.navigate(NAVIGATION.NOTES)
       }
     }

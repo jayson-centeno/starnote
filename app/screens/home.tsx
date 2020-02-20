@@ -1,14 +1,15 @@
 import React from 'react'
-import { View, TouchableOpacity, StyleSheet, ScrollView, TouchableHighlight } from 'react-native'
+import { View, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
 import Screen from '../components/screen'
 import globalStyle from '../globalStyle'
 import Icon from '../components/Icon'
 import { NoteType } from '../domain/enums'
-import { withTheme, Theme, Card, Paragraph, Button } from 'react-native-paper'
+import { withTheme, Theme } from 'react-native-paper'
 import { observer, inject } from 'mobx-react'
 import { STORES, NAVIGATION } from '../domain/constants'
 import { IHomeState, IHomeProps } from '../domain/interfaces/components'
 import NoteModel from '../domain/models/note'
+import NoteListItem from '../components/noteListItem'
 
 @inject(STORES.NoteStore)
 @observer
@@ -20,11 +21,9 @@ class Home extends React.Component<IHomeProps, IHomeState> {
     }
   }
 
-  componentDidMount = () => {
-    if (!this.props.noteStore.header.loaded) {
-      this.props.noteStore.loadNotes()
-      this.props.noteStore.header.loaded = true
-    }
+  componentDidMount = async () => {
+    console.log('loadNotes')
+    await this.props.noteStore.loadNotes()
   }
 
   get Theme(): Theme {
@@ -45,7 +44,7 @@ class Home extends React.Component<IHomeProps, IHomeState> {
   }
 
   newNoteClicked = (type: NoteType): void => {
-    this.props.noteStore.add(new NoteModel({ type: type, title: 'New Note' }))
+    this.props.noteStore.add(new NoteModel({ type: type, title: 'New Note', rank: 0 }))
     this.props.navigation.navigate(NAVIGATION.NOTE)
   }
 
@@ -97,22 +96,10 @@ class Home extends React.Component<IHomeProps, IHomeState> {
   renderNotes = (): React.ReactNode => {
     const { notes } = this.props.noteStore.header
     if (notes.length > 0) {
-      console.log('renderNotes', notes.length)
-      return notes.map(note => (
-        <TouchableHighlight key={note.id} style={[homeStyle.surface]}>
-          <Card onPress={() => this.editClicked(note)} elevation={3}>
-            <Card.Title title={note.title} subtitle="Note" />
-            <Card.Content>
-              <Paragraph>{note.content}</Paragraph>
-            </Card.Content>
-            <Card.Actions>
-              <Button>Edit</Button>
-            </Card.Actions>
-          </Card>
-        </TouchableHighlight>
+      return notes.map((note: NoteModel) => (
+        <NoteListItem key={note.id} note={note} editClicked={(model: NoteModel) => this.editClicked(model)} />
       ))
     }
-
     return
   }
 
