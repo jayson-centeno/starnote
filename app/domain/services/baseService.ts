@@ -1,4 +1,4 @@
-import { ICrudService, IResult, IRepository, IResultNoReturn } from '../interfaces/appInterface'
+import { ICrudService, IResult, IRepository, IResultNoReturn } from '../interfaces/contracts'
 import { injectable } from 'inversify'
 
 @injectable()
@@ -9,7 +9,7 @@ export default class BaseService<T> implements ICrudService<T> {
     this.repository = repository
   }
 
-  public async Add(model: T): Promise<IResult<T>> {
+  public async add(model: T): Promise<IResult<T>> {
     try {
       let result = await this.repository.insert({ ...model })
       return <IResult<T>>{
@@ -26,7 +26,7 @@ export default class BaseService<T> implements ICrudService<T> {
     }
   }
 
-  public async Update(model: T): Promise<IResult<T>> {
+  public async update(model: T): Promise<IResult<T>> {
     try {
       let result = await this.repository.update({ ...model })
       return <IResult<T>>{
@@ -43,7 +43,7 @@ export default class BaseService<T> implements ICrudService<T> {
     }
   }
 
-  public async Delete(model: T): Promise<IResultNoReturn> {
+  public async delete(model: T): Promise<IResultNoReturn> {
     let result = await this.repository.destroy(model)
     return <IResultNoReturn>{
       successful: true,
@@ -52,7 +52,7 @@ export default class BaseService<T> implements ICrudService<T> {
     }
   }
 
-  public async DeleteById(id: any): Promise<IResultNoReturn> {
+  public async deleteById(id: any): Promise<IResultNoReturn> {
     let result = await this.repository.destroy(id)
     return <IResultNoReturn>{
       successful: true,
@@ -61,7 +61,7 @@ export default class BaseService<T> implements ICrudService<T> {
     }
   }
 
-  public async Get(id: number): Promise<IResult<T>> {
+  public async get(id: number): Promise<IResult<T>> {
     let result = await this.repository.find(id)
     return <IResult<T>>{
       successful: true,
@@ -71,12 +71,21 @@ export default class BaseService<T> implements ICrudService<T> {
     }
   }
 
-  public async GetAll(options: any = {}): Promise<IResult<T>> {
+  public async getAll(options: any = {}): Promise<IResult<T>> {
     let result = await this.repository.query(options)
     return <IResult<T>>{
       successful: true,
       error: null,
       data: result,
+      otherData: result,
+    }
+  }
+
+  public async dropTable(): Promise<IResultNoReturn> {
+    let result = await this.repository.dropTable()
+    return <IResultNoReturn>{
+      successful: true,
+      error: null,
       otherData: result,
     }
   }

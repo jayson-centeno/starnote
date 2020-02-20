@@ -1,16 +1,17 @@
 import React, { Component } from 'react'
 import globalStyle from '../../globalStyle'
-import { View, TextInput, TouchableNativeFeedback, Keyboard } from 'react-native'
+import { View, TextInput, Keyboard } from 'react-native'
 import Icon from '../Icon'
 import { inject, observer } from 'mobx-react'
 import { withTheme } from 'react-native-paper'
 import { Theme } from 'react-native-paper'
-import { HeaderStore } from 'app/core/stores/headerStore'
+import { NoteStore } from '../../domain/stores/noteStore'
+import { STORES } from '../../domain/constants'
 
 interface IHeaderTitleProps {
   title: string
   navigation: any
-  headerStore: HeaderStore
+  noteStore?: NoteStore
   theme: Theme
 }
 
@@ -19,39 +20,39 @@ interface IHeaderTitleState {
   lastPress: number
 }
 
-@inject('headerStore')
+@inject(STORES.NoteStore)
 @observer
 class HeaderTitle extends Component<IHeaderTitleProps, IHeaderTitleState> {
   constructor(props: any) {
     super(props)
-
-    Keyboard.addListener('keyboardDidHide', () => {
-      this.saveRecord()
-    })
   }
 
-  backClicked = () => {
+  backClicked = (): void => {
     this.props.navigation.navigate('Notes')
   }
 
-  saveClicked = () => {
+  saveClicked = (): void => {
     Keyboard.dismiss()
     this.saveRecord()
   }
 
-  saveRecord = () => {
-    this.props.headerStore.header.edit = false
+  saveRecord = (): void => {
+    this.props.noteStore!.save()
   }
 
-  onFocus = () => {
-    this.props.headerStore.header.edit = true
+  onFocus = (): void => {
+    this.props.noteStore!.header.isEditing = true
   }
 
-  get title() {
-    return this.props.headerStore.header.title
+  get title(): string {
+    return this.props.noteStore!.header.noteModel.title
   }
 
-  renderInput = (title: string) => {
+  changeTitle(value: string): void {
+    this.props.noteStore!.header.noteModel.title = value
+  }
+
+  renderInput = (title: string): React.ReactNode => {
     return (
       <TextInput
         defaultValue={title}
@@ -59,6 +60,7 @@ class HeaderTitle extends Component<IHeaderTitleProps, IHeaderTitleState> {
         disableFullscreenUI={true}
         autoFocus={true}
         selectTextOnFocus={true}
+        onChangeText={value => this.changeTitle(value)}
         style={{
           height: 30,
           width: 280,
@@ -75,18 +77,23 @@ class HeaderTitle extends Component<IHeaderTitleProps, IHeaderTitleState> {
     )
   }
 
-  renderUpdate = () => {
-    if (this.props.headerStore.header.edit) {
+  renderUpdate = (): React.ReactNode => {
+    if (this.props.noteStore!.header.isEditing) {
       return (
-        <TouchableNativeFeedback onPress={() => this.saveClicked()}>
-          <Icon name="done" color="#ffff" />
-        </TouchableNativeFeedback>
+        <View style={{ marginRight: 5, paddingTop: 6 }}>
+          <Icon name="done" color={this.props.theme.colors.primary} onPress={() => this.saveClicked()} />
+        </View>
       )
     } else {
       return (
-        <TouchableNativeFeedback onPress={() => this.backClicked()}>
-          <Icon name="arrow-back" color="#ffff" />
-        </TouchableNativeFeedback>
+        <View style={{ marginRight: 5, paddingTop: 8 }}>
+          <Icon
+            name="arrow-back"
+            size={24}
+            color={this.props.theme.colors.primary}
+            onPress={() => this.backClicked()}
+          />
+        </View>
       )
     }
   }
@@ -102,14 +109,7 @@ class HeaderTitle extends Component<IHeaderTitleProps, IHeaderTitleState> {
         }}
       >
         <View style={[globalStyle.flexRow]}>
-          <View
-            style={{
-              marginTop: 6,
-              marginRight: 5,
-            }}
-          >
-            {this.renderUpdate()}
-          </View>
+          {this.renderUpdate()}
           <View style={{ marginRight: 5 }}>{this.renderInput(this.title)}</View>
         </View>
       </View>

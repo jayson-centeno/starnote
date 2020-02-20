@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     fontSize: 24,
-    backgroundColor: '#fff',
+    backgroundColor: '#eee',
   },
   header: {
     flexDirection: 'row',

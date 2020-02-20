@@ -1,7 +1,8 @@
 import { DefaultTheme } from 'react-native-paper'
 
 export const NAVIGATION = {
-  HOME: 'Home',
+  NOTES: 'Notes',
+  NOTE: 'Note',
   LOGIN: 'Login',
 }
 
@@ -10,8 +11,17 @@ export const THEME = {
   colors: {
     ...DefaultTheme.colors,
     primary: '#fff',
-    backdrop: '#000',
+    backdrop: 'rgba(0,0,0,0.7)',
     background: '#333',
     accent: 'yellow',
   },
+}
+
+export const STORES = {
+  NoteStore: 'noteStore',
+}
+
+export const DIName = {
+  NoteService: 'INoteService',
+  NoreRepository: 'INoteRepository',
 }

@@ -3,7 +3,7 @@ import { createDrawerNavigator } from 'react-navigation-drawer'
 import { createStackNavigator } from 'react-navigation-stack'
 import Home from '../screens/home'
 import Settings from '../screens/settings'
-import Navigation from '../components/navigation'
+import Navigation from '../components/homeNavigation'
 import Navigator from '../components/navigator'
 import { Text } from 'react-native'
 import globalStyle from '../globalStyle'
@@ -13,7 +13,7 @@ const HomeStack = createStackNavigator({
     screen: Home,
     navigationOptions: Navigation,
     params: {
-      title: 'Star Notes'
+      title: 'Star Notes',
     },
   },
 })
@@ -37,24 +37,24 @@ export default createDrawerNavigator(
     Notes: {
       screen: HomeStack,
       params: {
-        title: 'Star Notes'
+        title: 'Star Notes',
       },
       navigationOptions: {
-        title: "Notes",
+        title: 'Notes',
         drawerLabel: <Text style={globalStyle.menuItem}>Notes</Text>,
       },
     },
     Settings: {
       screen: SettingsStack,
       navigationOptions: {
-        title: "Settings",
+        title: 'Settings',
         drawerLabel: <Text style={globalStyle.menuItem}>Settings</Text>,
       },
     },
     Theme: {
       screen: ThemeStack,
       navigationOptions: {
-        title: "Theme",
+        title: 'Theme',
         drawerLabel: <Text style={globalStyle.menuItem}>Theme</Text>,
       },
     },

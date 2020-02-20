@@ -1,127 +1,69 @@
 import React from 'react'
-import { View, TouchableOpacity, Dimensions, StyleSheet } from 'react-native'
+import { View, TouchableOpacity, StyleSheet, ScrollView, TouchableHighlight } from 'react-native'
 import Screen from '../components/screen'
 import globalStyle from '../globalStyle'
 import Icon from '../components/Icon'
-import { NoteType } from '../core/enums/appEnum'
-import { Theme } from 'react-native-paper'
+import { NoteType } from '../domain/enums'
+import { withTheme, Theme, Card, Paragraph, Button } from 'react-native-paper'
 import { observer, inject } from 'mobx-react'
-import { withTheme } from 'react-native-paper'
-import { HeaderStore } from '../core/stores/headerStore'
-import NoteModel from '../core/models/note'
-import { INoteService } from '../core/interfaces/appInterface'
-import { resolve } from 'inversify-react'
+import { STORES, NAVIGATION } from '../domain/constants'
+import { IHomeState, IHomeProps } from '../domain/interfaces/components'
+import NoteModel from '../domain/models/note'
 
-type IHomeState = {
-  showAdd: boolean
-  screenWidth: number
-  screenHeight: number
-}
-
-interface IHomeProps {
-  navigation: any
-  headerStore: HeaderStore
-  theme: Theme
-}
-
-@inject('headerStore')
+@inject(STORES.NoteStore)
 @observer
 class Home extends React.Component<IHomeProps, IHomeState> {
   constructor(props: any) {
     super(props)
     this.state = {
-      showAdd: false,
-      screenWidth: Math.round(Dimensions.get('window').width),
-      screenHeight: Math.round(Dimensions.get('window').height),
+      showAddOptions: false,
     }
-    // this.add()
-    // this.get()
-    // this.update()
-
-    this.props.headerStore.getNotes()
-
-    // this.getAll()
   }
 
-  // async add() {
-  //   let model = new NoteModel()
-  //   model.content = 'test 123'
-  //   model.title = 'my new test 123'
-  //   model.type = NoteType.Note
-  //   const result = await this.noteService.Add(model)
-  //   console.log(result)
-  // }
-
-  // async update() {
-  //   let model = new NoteModel()
-  //   model.id = 1
-  //   model.content = 'test 5134'
-  //   model.title = 'my new test 12312'
-  //   model.type = NoteType.Note
-  //   const result = await this.noteService.Update(model)
-  //   console.log(result)
-  // }
-
-  // async delete() {
-  //   var resutl = await this.noteService.DeleteById(1)
-  //   console.log(resutl)
-  // }
-
-  // async getAll() {
-  //   var all = await this.noteService.GetAll()
-  //   console.log(all)
-  // }
-
-  // async get() {
-  //   var all = await this.noteService.Get(1)
-  //   console.log(all.data)
-  // }
-
-  // componentDidMount = () => {
-  //   Dimensions.addEventListener('change', e => {
-  //     this.setState(() => {
-  //       return {
-  //         screenWidth: e.window.width,
-  //         screenHeight: e.window.height,
-  //       }
-  //     })
-  //   })
-  // }
+  componentDidMount = () => {
+    if (!this.props.noteStore.header.loaded) {
+      this.props.noteStore.loadNotes()
+      this.props.noteStore.header.loaded = true
+    }
+  }
 
   get Theme(): Theme {
     return this.props.theme
   }
 
-  addClicked = () => {
+  showAddOptionsClicked = () => {
     this.setState(() => {
       return {
-        showAdd: !this.state.showAdd,
+        showAddOptions: !this.state.showAddOptions,
       }
     })
   }
 
-  addNoteClicked = (type: NoteType) => {
-    this.props.headerStore.header.edit = true
-    this.props.headerStore.header.type = type
-    this.props.headerStore.header.title = 'New Note'
-    this.props.navigation.navigate('Note')
+  editClicked = (note: NoteModel) => {
+    this.props.noteStore.edit(note)
+    this.props.navigation.navigate(NAVIGATION.NOTE)
   }
 
-  hideOptions() {
+  newNoteClicked = (type: NoteType): void => {
+    this.props.noteStore.add(new NoteModel({ type: type, title: 'New Note' }))
+    this.props.navigation.navigate(NAVIGATION.NOTE)
+  }
+
+  hideOptions(): void {
     this.setState(() => {
       return {
-        showAdd: false,
+        showAddOptions: false,
       }
     })
   }
 
-  renderHideShowOptions = () => {
+  renderHideShowOptions = (): React.ReactNode => {
     const noteOptions = {
-      size: 40,
+      size: 25,
       color: this.Theme.colors.primary,
     }
 
-    if (this.state.showAdd) {
+    if (this.state.showAddOptions) {
       return (
         <View>
           <View
@@ -131,7 +73,7 @@ class Home extends React.Component<IHomeProps, IHomeState> {
               { backgroundColor: this.Theme.colors.background, borderColor: this.Theme.colors.primary },
             ]}
           >
-            <TouchableOpacity onPress={() => this.addNoteClicked(NoteType.List)}>
+            <TouchableOpacity onPress={() => this.newNoteClicked(NoteType.List)}>
               <Icon name="format-list-bulleted" size={noteOptions.size} color={noteOptions.color}></Icon>
             </TouchableOpacity>
           </View>
@@ -142,7 +84,7 @@ class Home extends React.Component<IHomeProps, IHomeState> {
               { backgroundColor: this.Theme.colors.background, borderColor: this.Theme.colors.primary },
             ]}
           >
-            <TouchableOpacity onPress={() => this.addNoteClicked(NoteType.Note)}>
+            <TouchableOpacity onPress={() => this.newNoteClicked(NoteType.Note)}>
               <Icon name="description" size={noteOptions.size} color={noteOptions.color}></Icon>
             </TouchableOpacity>
           </View>
@@ -152,42 +94,74 @@ class Home extends React.Component<IHomeProps, IHomeState> {
     return null
   }
 
-  render() {
-    const dynamicStyle = {
-      marginTop: this.state.screenHeight * 0.1,
+  renderNotes = (): React.ReactNode => {
+    const { notes } = this.props.noteStore.header
+    if (notes.length > 0) {
+      console.log('renderNotes', notes.length)
+      return notes.map(note => (
+        <TouchableHighlight key={note.id} style={[homeStyle.surface]}>
+          <Card onPress={() => this.editClicked(note)} elevation={3}>
+            <Card.Title title={note.title} subtitle="Note" />
+            <Card.Content>
+              <Paragraph>{note.content}</Paragraph>
+            </Card.Content>
+            <Card.Actions>
+              <Button>Edit</Button>
+            </Card.Actions>
+          </Card>
+        </TouchableHighlight>
+      ))
     }
 
+    return
+  }
+
+  renderAddOptions = (): React.ReactNode => {
+    return (
+      <View>
+        <TouchableOpacity style={[homeStyle.addButton]} onPress={() => this.showAddOptionsClicked()}>
+          <Icon name="add-circle" size={70} color="rgba(0,0,0,0.7)"></Icon>
+        </TouchableOpacity>
+        {this.renderHideShowOptions()}
+      </View>
+    )
+  }
+
+  render() {
     return (
       <Screen title="Star Notes" hideStatus={false}>
-        <View style={[globalStyle.innerScreen, { position: 'relative' }]}>
-          <View style={[globalStyle.centerContent, dynamicStyle]}>
-            <TouchableOpacity onPress={() => this.addClicked()} onBlur={() => this.addClicked()}>
-              <Icon name="add-circle" size={100} color={this.Theme.colors.backdrop}></Icon>
-            </TouchableOpacity>
-            {this.renderHideShowOptions()}
-          </View>
-        </View>
+        <ScrollView style={[globalStyle.innerScreen, { position: 'relative' }]}>{this.renderNotes()}</ScrollView>
+        {this.renderAddOptions()}
       </Screen>
     )
   }
 }
 
 var homeStyle = StyleSheet.create({
+  surface: {
+    marginBottom: 10,
+    borderColor: '#aaa',
+  },
+  addButton: {
+    position: 'absolute',
+    bottom: 10,
+    right: 10,
+  },
   noteOptionList: {
     position: 'absolute',
-    top: -75,
-    left: 60,
-    width: 70,
-    height: 70,
+    bottom: 80,
+    right: 20,
+    width: 50,
+    height: 50,
     borderRadius: 50,
     borderWidth: 1,
   },
   noteOptionNote: {
     position: 'absolute',
-    top: -75,
-    right: 60,
-    width: 70,
-    height: 70,
+    bottom: 135,
+    right: 20,
+    width: 50,
+    height: 50,
     borderRadius: 50,
     borderWidth: 1,
   },

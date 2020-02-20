@@ -23,7 +23,7 @@
       "reflect-metadata"
     ],
     "typeRoots": [
-      "./app/core/types",
+      "app/domain/types",
       "./node_modules/@types"
     ]
   },

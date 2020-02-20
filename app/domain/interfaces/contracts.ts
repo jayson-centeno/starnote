@@ -1,7 +1,7 @@
 export interface IResult<T> {
   successful: boolean
   error: any
-  data: T | T[]
+  data: any
   otherData: any
 }
 
@@ -12,12 +12,13 @@ export interface IResultNoReturn {
 }
 
 export interface ICrudService<T> {
-  Add(model: T): Promise<IResult<T>>
-  Update(model: T): Promise<IResult<T>>
-  Delete(model: T): Promise<IResultNoReturn>
-  DeleteById(id: any): Promise<IResultNoReturn>
-  Get(id: number): Promise<IResult<T>>
-  GetAll(): Promise<IResult<T>>
+  add(model: T): Promise<IResult<T>>
+  update(model: T): Promise<IResult<T>>
+  delete(model: T): Promise<IResultNoReturn>
+  deleteById(id: any): Promise<IResultNoReturn>
+  get(id: number): Promise<IResult<T>>
+  getAll(): Promise<IResult<T>>
+  dropTable(): Promise<IResultNoReturn>
 }
 
 export interface INoteService<T> extends ICrudService<T> {}

@@ -1,20 +1,15 @@
-import { NoteType } from '../core/enums/appEnum'
+import { NoteType } from '../domain/enums'
 import React, { Component } from 'react'
 import Screen from '../components/screen'
 import { observer, inject } from 'mobx-react'
-import { withTheme, TextInput, Theme } from 'react-native-paper'
+import { withTheme, TextInput } from 'react-native-paper'
 import { View } from 'react-native'
 import globalStyle from '../globalStyle'
-import { HeaderStore } from '../core/stores/headerStore'
+import { STORES, NAVIGATION } from '../domain/constants'
+import { INoteProps } from '../domain/interfaces/components'
+import ModalDialog from '../components/dialog'
 
-interface INoteProps {
-  title: string
-  navigation: any
-  headerStore: HeaderStore
-  theme: Theme
-}
-
-@inject('headerStore')
+@inject(STORES.NoteStore)
 @observer
 class Note extends Component<INoteProps, any> {
   constructor(props: INoteProps) {
@@ -22,21 +17,52 @@ class Note extends Component<INoteProps, any> {
   }
 
   get noteType(): NoteType {
-    return this.props.headerStore.header.type as NoteType
+    return this.props.noteStore.header.noteModel.type
   }
 
-  showCalculator = () => {
+  showCalculator = (): React.ReactNode => {
     return null
   }
 
-  onFocus = () => {
-    this.props.headerStore.header.edit = true
+  onFocus = (): void => {
+    this.props.noteStore.header.isEditing = true
+  }
+
+  onChangeContent = (value: string): void => {
+    this.props.noteStore.header.noteModel.content = value
+  }
+
+  onDelete = async (value: boolean) => {
+    if (value) {
+      const result = await this.props.noteStore.delete(this.props.noteStore.header.noteModel)
+      if (result) {
+        this.props.noteStore.header.isEditing = false
+        this.props.noteStore.header.isNew = false
+        this.props.noteStore.loadNotes()
+        this.props.navigation.navigate(NAVIGATION.NOTES)
+      }
+    }
+
+    this.props.noteStore.header.showDelete = false
+  }
+
+  renderDeleteDialog(): React.ReactNode {
+    if (!this.props.noteStore.header.showDelete) {
+      return
+    }
+    return (
+      <ModalDialog
+        onDelete={(value: boolean) => this.onDelete(value)}
+        visible={this.props.noteStore.header.showDelete}
+      ></ModalDialog>
+    )
   }
 
   renderEditor = () => {
     if (this.noteType === NoteType.Note) {
       return (
         <TextInput
+          defaultValue={this.props.noteStore.header.noteModel.content}
           multiline={true}
           onFocus={() => this.onFocus()}
           dense={true}
@@ -48,6 +74,7 @@ class Note extends Component<INoteProps, any> {
           theme={this.props.theme}
           style={{ backgroundColor: '#fff', fontSize: 22, letterSpacing: 50 }}
           disabled={false}
+          onChangeText={value => this.onChangeContent(value)}
         ></TextInput>
       )
     } else {
@@ -61,6 +88,7 @@ class Note extends Component<INoteProps, any> {
         <View style={[globalStyle.innerScreen, { position: 'relative' }]}>
           {this.renderEditor()}
           {this.showCalculator()}
+          {this.renderDeleteDialog()}
         </View>
       </Screen>
     )

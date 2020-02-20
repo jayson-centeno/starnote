@@ -1,16 +1,17 @@
-import { Container } from 'inversify'
 import 'reflect-metadata'
-import { INoteService, INoteRepository, IRepository } from '../interfaces/appInterface'
+import { Container } from 'inversify'
+import { INoteService, INoteRepository, IRepository } from '../interfaces/contracts'
 import NoteService from '../services/noteService'
 import NoteModel from '../models/note'
 import NoteRepository from '../dataLayer/repositories/NoteRepository'
 import getDecorators from 'inversify-inject-decorators'
 import Repository from '../dataLayer/repositories/Repository'
 import DatabaseLayer from '../dataLayer/DatabaseLayer'
+import { DIName } from '../constants'
 
 const container = new Container()
 container
-  .bind<INoteRepository>('INoteRepository')
+  .bind<INoteRepository>(DIName.NoreRepository)
   .toConstantValue(
     new NoteRepository(
       new DatabaseLayer(NoteRepository.database, NoteRepository.tableName, NoteRepository.columnMapping)
@@ -22,7 +23,7 @@ container
   .to(Repository)
   .inSingletonScope()
 
-container.bind<INoteService<NoteModel>>('INoteService').to(NoteService)
+container.bind<INoteService<NoteModel>>(DIName.NoteService).to(NoteService)
 
 let decorators = getDecorators(container)
 let { lazyInject, lazyInjectTagged } = decorators

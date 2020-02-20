@@ -2,7 +2,7 @@ import Repository from './Repository'
 import * as SQLite from 'expo-sqlite'
 import { types } from '../DataTypes'
 import DatabaseLayer from '../DatabaseLayer'
-import { INoteRepository } from 'app/core/interfaces/appInterface'
+import { INoteRepository } from 'app/domain/interfaces/contracts'
 import { injectable } from 'inversify'
 
 @injectable()

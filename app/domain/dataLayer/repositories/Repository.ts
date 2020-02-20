@@ -1,5 +1,5 @@
 import DatabaseLayer from '../DatabaseLayer'
-import { IRepository } from 'app/core/interfaces/appInterface'
+import { IRepository } from 'app/domain/interfaces/contracts'
 import { injectable } from 'inversify'
 
 @injectable()

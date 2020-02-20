@@ -1,6 +1,6 @@
 import NoteModel from '../models/note'
 import BaseService from './baseService'
-import { INoteService, INoteRepository } from '../interfaces/appInterface'
+import { INoteService, INoteRepository } from '../interfaces/contracts'
 import { injectable, inject } from 'inversify'
 
 @injectable()

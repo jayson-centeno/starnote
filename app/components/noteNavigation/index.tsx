@@ -3,14 +3,12 @@ import HeaderTitle from './headerTitle'
 import HeaderRight from './headerRight'
 
 export default ({ navigation }: any) => {
-  const { edit, add, title } = {
-    edit: navigation.dangerouslyGetParent().getParam('edit'),
-    add: navigation.dangerouslyGetParent().getParam('add'),
+  const { title } = {
     title: navigation.dangerouslyGetParent().getParam('title'),
   }
 
   return {
-    headerRight: <HeaderRight />,
+    headerRight: <HeaderRight navigation />,
     headerTitle: <HeaderTitle title={title} navigation={navigation} />,
     headerStyle: {
       height: 30,
