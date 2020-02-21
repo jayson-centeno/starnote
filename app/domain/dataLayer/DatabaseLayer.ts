@@ -1,5 +1,6 @@
 import QueryBuilder from './query_builder'
 import DataTypes from './DataTypes'
+import { IDefaultQueryOptions } from '../interfaces/contracts'
 
 export default class DatabaseLayer {
   database: any
@@ -135,7 +136,7 @@ export default class DatabaseLayer {
     )
   }
 
-  async query(options: any): Promise<any> {
+  async query(options: IDefaultQueryOptions = {}): Promise<any> {
     const sql = QueryBuilder.query(this.tableName, options)
     const params = Object.values(options.where || {})
     return await this.executeSql(sql, params).then(

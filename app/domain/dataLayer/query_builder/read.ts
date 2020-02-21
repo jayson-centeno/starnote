@@ -1,4 +1,6 @@
-const defaultOptions = {
+import { IDefaultQueryOptions } from '../../interfaces/contracts'
+
+const defaultOptions = <IDefaultQueryOptions>{
   columns: '*',
   page: null,
   limit: 30,
@@ -17,8 +19,8 @@ export function find(tableName: string) {
  *   where: {status_eq: 'encerrado'}
  * })
  */
-export function query(tableName: string, options = {}) {
-  const { columns = '', page = 0, limit = 0, where = '', order = '' } = {
+export function query(tableName: string, options: IDefaultQueryOptions = defaultOptions) {
+  const { columns = '', page = 0, limit = 0, where = {}, order = '' } = {
     ...defaultOptions,
     ...options,
   }
@@ -54,7 +56,7 @@ export function propertyOperation(statement: string | number | symbol) {
 }
 
 // Build where query
-export function queryWhere(options: any) {
+export function queryWhere(options: IDefaultQueryOptions) {
   const list = Object.keys(options).map(p => `${propertyOperation(p)} ?`)
   return list.length > 0 ? `WHERE ${list.join(' AND ')}` : ''
 }

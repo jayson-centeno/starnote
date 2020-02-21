@@ -13,12 +13,17 @@ export const THEME = {
     primary: '#fff',
     backdrop: 'rgba(0,0,0,0.7)',
     background: '#333',
-    accent: 'yellow',
+    accent: '#FFD4AA',
   },
 }
 
 export const STORES = {
   NoteStore: 'noteStore',
+}
+
+export const RECORD = {
+  defaultLimit: 5,
+  defaultPage: 1,
 }
 
 export const DIName = {

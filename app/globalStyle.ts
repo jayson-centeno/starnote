@@ -26,7 +26,6 @@ export default StyleSheet.create({
     flex: 1,
   },
   innerScreen: {
-    paddingVertical: 10,
     paddingHorizontal: 5,
   },
   centerElement: {
@@ -105,6 +104,14 @@ export default StyleSheet.create({
   centerContent: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  rightContent: {
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+  },
+  leftContent: {
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
   },
   subHeader: {
     fontSize: 23,

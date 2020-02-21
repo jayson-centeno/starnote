@@ -1,5 +1,4 @@
 import React from 'react'
-import './app/domain/di'
 import { Provider } from 'mobx-react'
 import { Provider as PaperProvider } from 'react-native-paper'
 import AppContainer from './app/index'
@@ -9,15 +8,15 @@ import stores from './app/domain/stores/index'
 
 export default function App() {
   return (
-    <PaperProvider
-      theme={THEME}
-      settings={{
-        icon: props => <MaterialIcons {...props} />,
-      }}
-    >
-      <Provider {...stores}>
+    <Provider {...stores}>
+      <PaperProvider
+        theme={THEME}
+        settings={{
+          icon: props => <MaterialIcons {...props} />,
+        }}
+      >
         <AppContainer />
-      </Provider>
-    </PaperProvider>
+      </PaperProvider>
+    </Provider>
   )
 }

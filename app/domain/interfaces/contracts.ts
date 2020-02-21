@@ -15,7 +15,7 @@ export interface ICrudService<T> {
   delete(model: T): Promise<IResultNoReturn>
   deleteById(id: any): Promise<IResultNoReturn>
   get(id: number): Promise<IResult<T>>
-  getAll(options: any): Promise<IResult<T>>
+  getAll(options: IDefaultQueryOptions): Promise<IResult<T>>
   dropTable(): Promise<IResultNoReturn>
 }
 
@@ -33,4 +33,12 @@ export interface IRepository {
   find(id: any): any
   findBy(where: any): any
   query(options: any): any
+}
+
+export interface IDefaultQueryOptions {
+  columns?: string
+  page?: any
+  limit?: number
+  where?: any
+  order?: string
 }

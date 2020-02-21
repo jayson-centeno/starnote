@@ -2,9 +2,9 @@ import { NoteStore } from '../stores/noteStore'
 import { Theme } from 'react-native-paper'
 
 export interface INoteProps {
-  title: string
-  navigation: any
-  noteStore: NoteStore
+  title?: string
+  navigation?: any
+  noteStore?: NoteStore
   theme: Theme
 }
 
@@ -16,4 +16,5 @@ export interface IHomeProps {
   navigation: any
   noteStore: NoteStore
   theme: Theme
+  showAddOption: boolean
 }

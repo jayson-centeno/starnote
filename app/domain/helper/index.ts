@@ -3,11 +3,20 @@ import { IRepository } from '../interfaces/contracts'
 import { DIName } from '../constants'
 
 export const truncate = (value: string, len = 30, target = 100) => {
+  if (!value) {
+    return value
+  }
+
   value = value.replace(/\n/g, ' ')
   return value.length >= len ? value.substring(0, target) + '...' : value
 }
 
 export const unixDateTimeConverter = (ts: number) => {
+  let dt = new Date(ts)
+  return dt.toDateString()
+}
+
+export const unixDateConverter = (ts: number) => {
   let dt = new Date(ts)
   return dt.toDateString()
 }

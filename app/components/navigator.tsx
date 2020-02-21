@@ -1,16 +1,4 @@
 import React from 'react'
-import { View, Text, ScrollView } from 'react-native'
-import { DrawerItems } from 'react-navigation-drawer'
+import NoteEditor from './noteEditor'
 
-export default (props: any) => {
-    return (
-        <View>
-            <View>
-                <Text>Test</Text>
-            </View>
-            <ScrollView>
-                <DrawerItems {...props} />
-            </ScrollView>
-        </View >
-    )
-}
+export default (props: any) => <NoteEditor {...props} />

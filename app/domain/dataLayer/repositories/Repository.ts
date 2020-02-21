@@ -1,5 +1,5 @@
 import DatabaseLayer from '../DatabaseLayer'
-import { IRepository } from 'app/domain/interfaces/contracts'
+import { IRepository, IDefaultQueryOptions } from 'app/domain/interfaces/contracts'
 import { injectable } from 'inversify'
 
 @injectable()
@@ -47,7 +47,7 @@ export default class Repository implements IRepository {
     return await this.databaseLayer.findBy(where).then((res: any) => res)
   }
 
-  async query(options = {}) {
+  async query(options: IDefaultQueryOptions = {}) {
     return await this.databaseLayer.query(options).then((res: any[]) => res)
   }
 }

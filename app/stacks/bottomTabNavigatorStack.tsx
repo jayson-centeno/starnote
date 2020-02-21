@@ -7,6 +7,7 @@ import TabBarIcon from '../components/tabBarIcon'
 import { createStackNavigator } from 'react-navigation-stack'
 import Navigation from '../components/homeNavigation'
 import ThemeScreen from '../screens/theme'
+import { NAVIGATION } from '../domain/constants'
 
 const HomeStack = createStackNavigator({
   Notes: {
@@ -42,8 +43,8 @@ export default createMaterialBottomTabNavigator(
       screen: HomeStack,
       params: {
         title: 'Star Notes',
-        icon: 'description',
-        isDefault: true,
+        icon: 'star',
+        default: true,
       },
       navigationOptions: {
         tabBarIcon: ({ focused }: any) => {
@@ -89,10 +90,7 @@ export default createMaterialBottomTabNavigator(
     },
   },
   {
-    initialRouteName: 'Notes',
-    activeColor: '#000',
-    inactiveColor: '#888',
-    barStyleLight: { backgroundColor: '#ffffff' },
+    initialRouteName: NAVIGATION.NOTES,
     labeled: true,
     shifting: false,
   }

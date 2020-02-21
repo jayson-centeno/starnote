@@ -1,14 +1,13 @@
 import { createAppContainer, createSwitchNavigator } from 'react-navigation'
-import AppStack from './stacks/bottomTabNavigatorStack'
 import AuthStack from './stacks/bootStrapStack'
-import NoteStack from './stacks/noteStack'
+import DrawerStack from './stacks/drawerStack'
+// import NoteStack from './stacks/noteStack'
 
 export default createAppContainer(
   createSwitchNavigator(
     {
       AuthLoading: AuthStack,
-      App: AppStack,
-      Note: NoteStack,
+      App: DrawerStack,
     },
     {
       initialRouteName: 'AuthLoading',

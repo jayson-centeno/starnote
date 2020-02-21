@@ -2,7 +2,8 @@ import { INoteService } from '../interfaces/contracts'
 import NoteModel from '../models/note'
 import { observable, action, computed } from 'mobx'
 import { container } from '../di'
-import { DIName } from '../constants'
+import { DIName, RECORD } from '../constants'
+import { unixDateConverter } from '../helper'
 
 const defaults = {
   loading: false,
@@ -11,7 +12,9 @@ const defaults = {
   isEditing: false,
   isNew: false,
   loaded: false,
+  showAddOption: false,
   showDelete: false,
+  oldNoteModel: <NoteModel>{},
   noteModel: <NoteModel>{},
   notes: Array<NoteModel>(),
 }
@@ -36,6 +39,8 @@ export class NoteStore {
   @action.bound edit(model: NoteModel) {
     this.header.isEditing = true
     this.header.isNew = false
+
+    this.header.oldNoteModel = <NoteModel>{ ...model }
     this.header.noteModel = model
   }
 
@@ -51,7 +56,11 @@ export class NoteStore {
     }
 
     this.header.loading = true
-    var all = await this.noteService.getAll({ order: 'modifiedDate DESC' })
+    var all = await this.noteService.getAll({
+      order: 'modifiedDate DESC',
+      limit: RECORD.defaultLimit,
+      page: RECORD.defaultPage,
+    })
     this.header.loading = false
     // console.log(all)
     if (all && all.data.length > 0) {
@@ -71,6 +80,8 @@ export class NoteStore {
     this.header.loading = false
     this.header.isEditing = false
     this.header.isNew = false
+    this.header.noteModel = <NoteModel>{}
+    this.header.showAddOption = true
 
     if (result.successful) {
       return true
@@ -85,17 +96,53 @@ export class NoteStore {
     }
 
     this.header.loading = true
+
+    //New record
     if (this.header.noteModel.id === null || this.header.noteModel.id === 0 || this.header.noteModel.id === undefined) {
       this.header.noteModel.createDate = Date.now()
       this.header.noteModel.modifiedDate = Date.now()
-      var result = await this.noteService.add(<NoteModel>{ ...this.header.noteModel })
-      if (!result.successful) {
+
+      //make sure one of the field has value
+      if (this.header.noteModel.title || this.header.noteModel.content) {
+        if (!this.header.noteModel.title) {
+          this.header.noteModel.title = unixDateConverter(this.header.noteModel.createDate)
+        } else {
+          this.header.noteModel.title = this.header.noteModel.title.trim()
+        }
+
+        var result = await this.noteService.add(<NoteModel>{ ...this.header.noteModel })
+        if (!result.successful) {
+          console.log('New save failed', result)
+        }
+
+        console.log('New save successful')
       }
+
+      //Update record
     } else {
+      if (
+        this.header.noteModel.title === this.header.oldNoteModel.title &&
+        this.header.noteModel.content === this.header.oldNoteModel.content &&
+        this.header.noteModel.rank === this.header.oldNoteModel.rank
+      ) {
+        this.header.isEditing = false
+        this.header.loading = false
+        return
+      }
+
+      if (!this.header.noteModel.title) {
+        this.header.noteModel.title = unixDateConverter(Date.now())
+      } else {
+        this.header.noteModel.title = this.header.noteModel.title.trim()
+      }
+
       this.header.noteModel.modifiedDate = Date.now()
       var result = await this.noteService.update(<NoteModel>{ ...this.header.noteModel })
       if (!result.successful) {
+        console.log('New update failed', result)
       }
+
+      console.log('New update successful')
     }
 
     this.header.isEditing = false

@@ -66,6 +66,19 @@ class HeaderTitle extends Component<IHeaderTitleProps, IHeaderTitleState> {
   }
 
   renderInput = (title: string): React.ReactNode => {
+    var style = {
+      height: 30,
+      width: 280,
+      color: this.props.theme.colors.accent,
+      backgroundColor: '#000',
+      paddingLeft: 5,
+      paddingRight: 5,
+      paddingTop: 0,
+      paddingBottom: 0,
+      marginTop: 3,
+      fontSize: 20,
+    }
+
     return (
       <TextInput
         defaultValue={title}
@@ -74,27 +87,8 @@ class HeaderTitle extends Component<IHeaderTitleProps, IHeaderTitleState> {
         autoFocus={true}
         selectTextOnFocus={false}
         onChangeText={value => this.changeTitle(value)}
-        style={{
-          height: 30,
-          width: 280,
-          color: '#fff',
-          backgroundColor: '#000',
-          paddingLeft: 5,
-          paddingRight: 5,
-          paddingTop: 0,
-          paddingBottom: 0,
-          marginTop: 3,
-          fontSize: 20,
-        }}
+        style={style}
       ></TextInput>
-    )
-  }
-
-  renderUpdate = (): React.ReactNode => {
-    return (
-      <View style={{ marginRight: 5, paddingTop: 8 }}>
-        <Icon name="arrow-back" size={24} color={this.props.theme.colors.primary} onPress={() => this.backClicked()} />
-      </View>
     )
   }
 
@@ -109,7 +103,14 @@ class HeaderTitle extends Component<IHeaderTitleProps, IHeaderTitleState> {
         }}
       >
         <View style={[globalStyle.flexRow]}>
-          {this.renderUpdate()}
+          <View style={{ marginRight: 5, paddingTop: 8 }}>
+            <Icon
+              name="arrow-back"
+              size={24}
+              color={this.props.theme.colors.accent}
+              onPress={() => this.backClicked()}
+            />
+          </View>
           <View style={{ marginRight: 5 }}>{this.renderInput(this.title)}</View>
         </View>
       </View>
