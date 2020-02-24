@@ -24,4 +24,7 @@ export const unixDateConverter = (ts: number) => {
 export const resetDb = async () => {
   var repo = container.get<IRepository>(DIName.NoteRepository)
   await repo.dropTable()
+
+  repo = container.get<IRepository>(DIName.NoteItemRepository)
+  await repo.dropTable()
 }

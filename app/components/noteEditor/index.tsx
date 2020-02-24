@@ -3,15 +3,16 @@ import React, { Component } from 'react'
 import Screen from '../../components/screen'
 import { observer, inject } from 'mobx-react'
 import { withTheme } from 'react-native-paper'
-import { TextInput, BackHandler, StyleSheet, KeyboardAvoidingView } from 'react-native'
-import globalStyle from '../../globalStyle'
+import { BackHandler, KeyboardAvoidingView, View } from 'react-native'
 import { STORES } from '../../domain/constants'
 import { INoteProps } from '../../domain/interfaces/components'
 import ModalDialog from '../../components/dialog'
-import NoteToolBar from './noteToolbar'
-import ListItemToolBar from './listItemToolbar'
-import NoteModel from '../../domain/models/note'
-import ListHeader from './listHeader'
+import NoteToolBar from './bottomToolbars/defaultToolbar'
+import ListItemToolBar from './bottomToolbars/listItemToolbar'
+import ListNote from './list'
+import NoteTitle from './title'
+import Editor from './editor'
+import NoteItemModel from '../../domain/models/noteItem'
 
 @inject(STORES.NoteStore)
 @observer
@@ -27,6 +28,11 @@ class Note extends Component<INoteProps, any> {
 
     if (this.props.noteStore!.header.showDelete) {
       this.props.noteStore!.header.showDelete = false
+      return false
+    }
+
+    if (this.props.noteStore!.header.listEditMode) {
+      this.props.noteStore!.header.listEditMode = false
       return false
     }
 
@@ -58,7 +64,7 @@ class Note extends Component<INoteProps, any> {
     return this.props.noteStore!.header.noteModel.type
   }
 
-  onFocus = (): void => {
+  onTitleFocus = (): void => {
     this.props.noteStore!.header.isEditing = true
   }
 
@@ -83,7 +89,13 @@ class Note extends Component<INoteProps, any> {
   }
 
   onShowAddListItemDialog() {
-    console.log('show list item')
+    this.props.noteStore!.addListItem(
+      new NoteItemModel({
+        title: '',
+        checked: false,
+        rowIndex: 0,
+      })
+    )
   }
 
   switchToEditMode = (value: boolean) => {
@@ -106,47 +118,33 @@ class Note extends Component<INoteProps, any> {
 
   renderTitle = (): React.ReactNode => {
     return (
-      <TextInput
-        defaultValue={this.props.noteStore!.header.noteModel.title}
-        onFocus={() => this.onFocus()}
-        placeholder="Type the Title here!"
-        placeholderTextColor="#888"
-        disableFullscreenUI={true}
-        autoFocus={this.props.noteStore!.header.isEditing ? true : false}
-        selectTextOnFocus={false}
-        selectionColor="#aaa"
-        onChangeText={value => this.changeTitle(value)}
-        style={style.titleInput}
-      ></TextInput>
+      <NoteTitle
+        noteModel={this.props.noteStore!.header.noteModel}
+        isEditing={this.props.noteStore!.header.isEditing}
+        changeTitle={(value: string) => this.changeTitle(value)}
+        onTitleFocus={() => this.onTitleFocus()}
+      />
     )
   }
 
   renderEditor = () => {
+    console.log('list note')
     if (this.noteType === NoteType.Note) {
       return (
-        <TextInput
-          defaultValue={this.props.noteStore!.header.noteModel.content}
-          multiline={true}
-          onFocus={() => this.onFocus()}
-          placeholderTextColor="#aaa"
-          disableFullscreenUI={true}
-          selectionColor="#aaa"
-          textAlignVertical="top"
-          textBreakStrategy="highQuality"
-          autoFocus={true}
-          placeholder="Type your Notes here!"
-          style={style.contentInput}
-          onChangeText={value => this.onChangeContent(value)}
-        ></TextInput>
+        <Editor
+          noteModel={this.props.noteStore!.header.noteModel}
+          onTitleFocus={() => this.onTitleFocus()}
+          onChangeContent={(value: string) => this.onChangeContent(value)}
+        />
       )
     } else {
-      if (this.props.noteStore!.header.listEditMode) {
-        console.log('rerender edit')
-        return <ListHeader switchToEditMode={(value: boolean) => this.switchToEditMode(value)} listEditMode={true} />
-      } else {
-        console.log('rerender readonly')
-        return <ListHeader switchToEditMode={(value: boolean) => this.switchToEditMode(value)} listEditMode={false} />
-      }
+      return (
+        <ListNote
+          switchToEditMode={(value: boolean) => this.switchToEditMode(value)}
+          listEditMode={this.props.noteStore!.header.listEditMode}
+          items={this.props.noteStore!.header.noteModel.items?.slice()}
+        />
+      )
     }
   }
 
@@ -157,10 +155,11 @@ class Note extends Component<INoteProps, any> {
         <ListItemToolBar
           visible={this.props.noteStore!.header.noteModel.type == NoteType.List}
           onShowAddListItemDialog={() => this.onShowAddListItemDialog()}
+          onShowDeleteDialog={() => this.showDeleteDialog()}
         />
-        <KeyboardAvoidingView style={[globalStyle.innerScreen]}>
-          {this.renderTitle()}
-          {this.renderEditor()}
+        <KeyboardAvoidingView>
+          <View>{this.renderTitle()}</View>
+          <View style={{ marginHorizontal: 10, marginVertical: 0 }}>{this.renderEditor()}</View>
           {this.renderDeleteDialog()}
         </KeyboardAvoidingView>
       </Screen>
@@ -169,37 +168,3 @@ class Note extends Component<INoteProps, any> {
 }
 
 export default withTheme(Note)
-
-var style = StyleSheet.create({
-  titleInput: {
-    width: '100%',
-    color: '#000',
-    backgroundColor: '#ddd',
-    paddingLeft: 5,
-    paddingRight: 5,
-    paddingBottom: 5,
-    paddingTop: 5,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    fontSize: 20,
-    borderTopLeftRadius: 5,
-    borderTopRightRadius: 5,
-  },
-  contentInput: {
-    backgroundColor: '#fff',
-    fontSize: 20,
-    paddingLeft: 5,
-    paddingTop: 5,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderTopWidth: 0,
-    height: '100%',
-    zIndex: 0,
-  },
-  listItem: {
-    borderBottomColor: '#ccc',
-    borderBottomWidth: 1,
-    padding: 0,
-    margin: 0,
-  },
-})

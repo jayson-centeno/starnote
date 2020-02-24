@@ -1,4 +1,5 @@
 import { NoteType } from '../enums'
+import NoteItemModel from './noteItem'
 
 export default class NoteModel {
   constructor({
@@ -10,6 +11,7 @@ export default class NoteModel {
     createDate,
     modifiedDate,
     rank,
+    items,
   }: {
     id?: number
     title: string
@@ -19,6 +21,7 @@ export default class NoteModel {
     createDate?: number
     modifiedDate?: number
     rank?: number
+    items?: Array<NoteItemModel>
   }) {
     this.id = id
     this.title = title
@@ -28,6 +31,7 @@ export default class NoteModel {
     this.createDate = createDate
     this.modifiedDate = modifiedDate
     this.rank = rank
+    this.items = items
   }
 
   id?: number
@@ -38,4 +42,5 @@ export default class NoteModel {
   createDate?: number
   modifiedDate?: number
   rank?: number
+  items?: Array<NoteItemModel>
 }

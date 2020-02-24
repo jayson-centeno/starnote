@@ -1,9 +1,11 @@
-import { INoteService } from '../interfaces/contracts'
+import { INoteService, INoteItemService } from '../interfaces/contracts'
 import NoteModel from '../models/note'
 import { observable, action, computed } from 'mobx'
 import { container } from '../di'
 import { DIName, RECORD } from '../constants'
 import { unixDateConverter } from '../helper'
+import { NoteType } from '../enums'
+import NoteItemModel from '../models/noteItem'
 
 const defaults = {
   loading: false,
@@ -22,9 +24,11 @@ const defaults = {
 
 export class NoteStore {
   private noteService: INoteService<NoteModel>
+  private noteItemService: INoteItemService<NoteItemModel>
 
-  constructor(noteService: INoteService<NoteModel>) {
+  constructor(noteService: INoteService<NoteModel>, noteItemService: INoteItemService<NoteItemModel>) {
     this.noteService = noteService
+    this.noteItemService = noteItemService
   }
 
   @observable header = defaults
@@ -37,17 +41,46 @@ export class NoteStore {
     this.header.showDelete = true
   }
 
-  @action.bound edit(model: NoteModel) {
+  @action.bound addListItem(noteItemModel: NoteItemModel) {
+    noteItemModel.noteId = this.header.noteModel.id
+    this.header.noteModel.items!.push(noteItemModel)
+
+    console.log(this.header.noteModel.items)
+  }
+
+  @action.bound async edit(model: NoteModel) {
     this.header.isEditing = true
     this.header.isNew = false
 
     this.header.oldNoteModel = <NoteModel>{ ...model }
     this.header.noteModel = model
+
+    if (model.type == NoteType.List) {
+      var result = await this.noteItemService.getAll({
+        order: 'index DESC',
+        where: {
+          noteId_eq: model.id,
+        },
+      })
+
+      if (result.data.length > 0) {
+        this.header.noteModel.items = observable.array(
+          (result.data as []).map((data: any) => <NoteItemModel>{ ...data })
+        )
+      } else {
+        this.header.noteModel.items = observable.array(<NoteItemModel[]>[])
+      }
+    }
   }
 
   @action.bound add(model: NoteModel) {
     this.header.isEditing = true
     this.header.isNew = true
+
+    if (model.type == NoteType.List) {
+      model.items = observable.array(<NoteItemModel[]>[])
+    }
+
     this.header.noteModel = model
   }
 
@@ -151,4 +184,7 @@ export class NoteStore {
   }
 }
 
-export default new NoteStore(container.get<INoteService<NoteModel>>(DIName.NoteService))
+export default new NoteStore(
+  container.get<INoteService<NoteModel>>(DIName.NoteService),
+  container.get<INoteItemService<NoteItemModel>>(DIName.NoteItemService)
+)

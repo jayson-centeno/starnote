@@ -1,7 +1,7 @@
 import React from 'react'
 import { withTheme, Appbar, Theme } from 'react-native-paper'
 import { StyleSheet } from 'react-native'
-import globalStyle from '../../globalStyle'
+import globalStyle from '../../../globalStyle'
 
 interface INoteToolbar {
   theme: Theme

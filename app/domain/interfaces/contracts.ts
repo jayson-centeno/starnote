@@ -21,7 +21,11 @@ export interface ICrudService<T> {
 
 export interface INoteService<T> extends ICrudService<T> {}
 
+export interface INoteItemService<T> extends ICrudService<T> {}
+
 export interface INoteRepository extends IRepository {}
+
+export interface INoteItemRepository extends IRepository {}
 
 export interface IRepository {
   createTable(): any

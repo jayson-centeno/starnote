@@ -30,4 +30,8 @@ export const DIName = {
   Repository: 'IRepository',
   NoteService: 'INoteService',
   NoteRepository: 'INoteRepository',
+  NoteItemService: 'INoteItemService',
+  NoteItemRepository: 'INoteItemRepository',
 }
+
+export const DBName = 'starnote.db'

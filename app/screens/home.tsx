@@ -3,13 +3,14 @@ import { ScrollView, BackHandler } from 'react-native'
 import Screen from '../components/screen'
 import globalStyle from '../globalStyle'
 import { NoteType } from '../domain/enums'
-import { withTheme, Theme } from 'react-native-paper'
+import { Theme, withTheme } from 'react-native-paper'
 import { observer, inject } from 'mobx-react'
 import { STORES } from '../domain/constants'
 import { IHomeState, IHomeProps } from '../domain/interfaces/components'
 import NoteModel from '../domain/models/note'
 import NoteListItem from '../components/noteListItem'
 import HomeOptions from '../components/homeOptions'
+import NoteItemModel from '../domain/models/noteItem'
 
 @inject(STORES.NoteStore)
 @observer
@@ -41,7 +42,14 @@ class Home extends React.Component<IHomeProps, IHomeState> {
   }
 
   newNoteClicked = (type: NoteType): void => {
-    this.props.noteStore.add(new NoteModel({ type: type, title: '', rank: 0 }))
+    this.props.noteStore.add(
+      new NoteModel({
+        type: type,
+        title: '',
+        rank: 0,
+        items: type == NoteType.List ? new Array<NoteItemModel>(0) : undefined,
+      })
+    )
     this.props.noteStore.header.showAddOption = false
     this.props.navigation.toggleDrawer()
   }
