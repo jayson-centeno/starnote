@@ -1,9 +1,15 @@
 import React from 'react'
-import { withTheme, Appbar } from 'react-native-paper'
+import { withTheme, Appbar, Theme } from 'react-native-paper'
 import { StyleSheet } from 'react-native'
 import globalStyle from '../../globalStyle'
 
-export default withTheme((props: any) => {
+interface INoteToolbar {
+  theme: Theme
+  onShowDeleteDialog: () => void
+  visible: boolean
+}
+
+export default withTheme((props: INoteToolbar) => {
   if (props.visible) {
     return (
       <Appbar theme={props.theme} style={[globalStyle.rightContent, styles.bottom]}>

@@ -2,13 +2,16 @@ import { NoteType } from '../../domain/enums'
 import React, { Component } from 'react'
 import Screen from '../../components/screen'
 import { observer, inject } from 'mobx-react'
-import { withTheme, Portal } from 'react-native-paper'
-import { View, TextInput, BackHandler, StyleSheet } from 'react-native'
+import { withTheme } from 'react-native-paper'
+import { TextInput, BackHandler, StyleSheet, KeyboardAvoidingView } from 'react-native'
 import globalStyle from '../../globalStyle'
-import { STORES, NAVIGATION } from '../../domain/constants'
+import { STORES } from '../../domain/constants'
 import { INoteProps } from '../../domain/interfaces/components'
 import ModalDialog from '../../components/dialog'
-import ToolBar from './toolbar'
+import NoteToolBar from './noteToolbar'
+import ListItemToolBar from './listItemToolbar'
+import NoteModel from '../../domain/models/note'
+import ListHeader from './listHeader'
 
 @inject(STORES.NoteStore)
 @observer
@@ -21,6 +24,11 @@ class Note extends Component<INoteProps, any> {
 
   handleBackPress = async () => {
     console.log('back pressed')
+
+    if (this.props.noteStore!.header.showDelete) {
+      this.props.noteStore!.header.showDelete = false
+      return false
+    }
 
     if (this.props.noteStore!.header.isEditing) {
       await this.saveRecord()
@@ -74,14 +82,20 @@ class Note extends Component<INoteProps, any> {
     this.props.noteStore!.header.showDelete = true
   }
 
+  onShowAddListItemDialog() {
+    console.log('show list item')
+  }
+
+  switchToEditMode = (value: boolean) => {
+    this.props.noteStore!.header.listEditMode = value
+  }
+
   renderDeleteDialog(): React.ReactNode {
-    if (!this.props.noteStore!.header.showDelete) {
-      return
-    }
     return (
       <ModalDialog
         onDelete={(value: boolean) => this.onDelete(value)}
         visible={this.props.noteStore!.header.showDelete}
+        deleteDismissed={() => (this.props.noteStore!.header.showDelete = false)}
       ></ModalDialog>
     )
   }
@@ -119,26 +133,36 @@ class Note extends Component<INoteProps, any> {
           selectionColor="#aaa"
           textAlignVertical="top"
           textBreakStrategy="highQuality"
-          autoFocus={false}
+          autoFocus={true}
           placeholder="Type your Notes here!"
           style={style.contentInput}
           onChangeText={value => this.onChangeContent(value)}
         ></TextInput>
       )
     } else {
-      return null
+      if (this.props.noteStore!.header.listEditMode) {
+        console.log('rerender edit')
+        return <ListHeader switchToEditMode={(value: boolean) => this.switchToEditMode(value)} listEditMode={true} />
+      } else {
+        console.log('rerender readonly')
+        return <ListHeader switchToEditMode={(value: boolean) => this.switchToEditMode(value)} listEditMode={false} />
+      }
     }
   }
 
   render() {
     return (
       <Screen>
-        <ToolBar visible={!this.props.noteStore!.header.isNew} onShowDeleteDialog={() => this.showDeleteDialog()} />
-        <View style={[globalStyle.innerScreen]}>
+        <NoteToolBar visible={!this.props.noteStore!.header.isNew} onShowDeleteDialog={() => this.showDeleteDialog()} />
+        <ListItemToolBar
+          visible={this.props.noteStore!.header.noteModel.type == NoteType.List}
+          onShowAddListItemDialog={() => this.onShowAddListItemDialog()}
+        />
+        <KeyboardAvoidingView style={[globalStyle.innerScreen]}>
           {this.renderTitle()}
           {this.renderEditor()}
           {this.renderDeleteDialog()}
-        </View>
+        </KeyboardAvoidingView>
       </Screen>
     )
   }
@@ -171,5 +195,11 @@ var style = StyleSheet.create({
     borderTopWidth: 0,
     height: '100%',
     zIndex: 0,
+  },
+  listItem: {
+    borderBottomColor: '#ccc',
+    borderBottomWidth: 1,
+    padding: 0,
+    margin: 0,
   },
 })

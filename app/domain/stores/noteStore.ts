@@ -15,6 +15,7 @@ const defaults = {
   showAddOption: false,
   showDelete: false,
   oldNoteModel: <NoteModel>{},
+  listEditMode: false,
   noteModel: <NoteModel>{},
   notes: Array<NoteModel>(),
 }
