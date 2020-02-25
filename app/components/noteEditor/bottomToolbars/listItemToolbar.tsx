@@ -5,17 +5,30 @@ import globalStyle from '../../../globalStyle'
 
 interface IListItemToolbar {
   theme: Theme
-  onShowAddListItemDialog: () => void
-  onShowDeleteDialog: () => void
+  onAddItem: () => void
+  onDeleteItem: () => void
+  onDeleteNote: () => void
+  switchToEditMode: (value: boolean) => void
+  isArrangeMode: boolean
   visible: boolean
+  isNewNote: boolean
 }
 
 export default withTheme((props: IListItemToolbar) => {
+  const renderDeleteNote = (): React.ReactNode => {
+    if (!props.isNewNote) {
+      return <Appbar.Action size={28} icon="delete" onPress={() => props.onDeleteNote()} />
+    }
+    return
+  }
+
   if (props.visible) {
     return (
       <Appbar theme={props.theme} style={[globalStyle.rightContent, styles.bottom]}>
-        <Appbar.Action size={30} icon="delete" onPress={() => props.onShowDeleteDialog()} />
-        <Appbar.Action size={30} icon="add-circle-outline" onPress={() => props.onShowAddListItemDialog()} />
+        {renderDeleteNote()}
+        <Appbar.Action size={28} icon="unfold-more" onPress={() => props.switchToEditMode(!props.isArrangeMode)} />
+        <Appbar.Action size={28} icon="clear" onPress={() => props.onDeleteItem()} />
+        <Appbar.Action size={28} icon="add-circle-outline" onPress={() => props.onAddItem()} />
       </Appbar>
     )
   }
@@ -29,5 +42,6 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     zIndex: 9999,
+    opacity: 0.8,
   },
 })

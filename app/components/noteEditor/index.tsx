@@ -3,7 +3,8 @@ import React, { Component } from 'react'
 import Screen from '../../components/screen'
 import { observer, inject } from 'mobx-react'
 import { withTheme } from 'react-native-paper'
-import { BackHandler, KeyboardAvoidingView, View } from 'react-native'
+import { BackHandler, View } from 'react-native'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { STORES } from '../../domain/constants'
 import { INoteProps } from '../../domain/interfaces/components'
 import ModalDialog from '../../components/dialog'
@@ -88,7 +89,7 @@ class Note extends Component<INoteProps, any> {
     this.props.noteStore!.header.showDelete = true
   }
 
-  onShowAddListItemDialog() {
+  onAddItem = (): void =>
     this.props.noteStore!.addListItem(
       new NoteItemModel({
         title: '',
@@ -96,39 +97,41 @@ class Note extends Component<INoteProps, any> {
         rowIndex: 0,
       })
     )
+
+  onSelectItem = (seletedModel: NoteItemModel): void => {
+    this.props.noteStore!.selectItem(seletedModel)
   }
 
-  switchToEditMode = (value: boolean) => {
-    this.props.noteStore!.header.listEditMode = value
+  onDeleteItem = (): void => this.props.noteStore!.removeSelectedItem()
+
+  switchToEditMode = (value: boolean) => (this.props.noteStore!.header.listEditMode = value)
+
+  onItemChecked = (selectedModel: NoteItemModel, value: boolean) => {
+    this.props.noteStore!.checkedItem(selectedModel, value)
   }
 
-  renderDeleteDialog(): React.ReactNode {
-    return (
-      <ModalDialog
-        onDelete={(value: boolean) => this.onDelete(value)}
-        visible={this.props.noteStore!.header.showDelete}
-        deleteDismissed={() => (this.props.noteStore!.header.showDelete = false)}
-      ></ModalDialog>
-    )
-  }
+  renderDeleteDialog = (): React.ReactNode => (
+    <ModalDialog
+      onDelete={(value: boolean) => this.onDelete(value)}
+      visible={this.props.noteStore!.header.showDelete}
+      deleteDismissed={() => (this.props.noteStore!.header.showDelete = false)}
+    ></ModalDialog>
+  )
 
-  changeTitle(value: string): void {
+  changeTitle = (value: string): void => {
     this.props.noteStore!.header.noteModel.title = value
   }
 
-  renderTitle = (): React.ReactNode => {
-    return (
-      <NoteTitle
-        noteModel={this.props.noteStore!.header.noteModel}
-        isEditing={this.props.noteStore!.header.isEditing}
-        changeTitle={(value: string) => this.changeTitle(value)}
-        onTitleFocus={() => this.onTitleFocus()}
-      />
-    )
-  }
+  renderTitle = (): React.ReactNode => (
+    <NoteTitle
+      noteModel={this.props.noteStore!.header.noteModel}
+      isEditing={this.props.noteStore!.header.isEditing}
+      changeTitle={(value: string) => this.changeTitle(value)}
+      onTitleFocus={() => this.onTitleFocus()}
+    />
+  )
 
   renderEditor = () => {
-    console.log('list note')
     if (this.noteType === NoteType.Note) {
       return (
         <Editor
@@ -143,6 +146,8 @@ class Note extends Component<INoteProps, any> {
           switchToEditMode={(value: boolean) => this.switchToEditMode(value)}
           listEditMode={this.props.noteStore!.header.listEditMode}
           items={this.props.noteStore!.header.noteModel.items?.slice()}
+          onSelectItem={(model: NoteItemModel) => this.onSelectItem(model)}
+          onItemChecked={(selectedModel: NoteItemModel, value: boolean) => this.onItemChecked(selectedModel, value)}
         />
       )
     }
@@ -151,17 +156,24 @@ class Note extends Component<INoteProps, any> {
   render() {
     return (
       <Screen>
-        <NoteToolBar visible={!this.props.noteStore!.header.isNew} onShowDeleteDialog={() => this.showDeleteDialog()} />
-        <ListItemToolBar
-          visible={this.props.noteStore!.header.noteModel.type == NoteType.List}
-          onShowAddListItemDialog={() => this.onShowAddListItemDialog()}
+        <NoteToolBar
+          visible={!this.props.noteStore!.header.isNew && this.props.noteStore!.header.noteModel.type == NoteType.Note}
           onShowDeleteDialog={() => this.showDeleteDialog()}
         />
-        <KeyboardAvoidingView>
-          <View>{this.renderTitle()}</View>
-          <View style={{ marginHorizontal: 10, marginVertical: 0 }}>{this.renderEditor()}</View>
-          {this.renderDeleteDialog()}
-        </KeyboardAvoidingView>
+        <ListItemToolBar
+          isNewNote={this.props.noteStore!.header.isNew}
+          visible={this.props.noteStore!.header.noteModel.type == NoteType.List}
+          onAddItem={() => this.onAddItem()}
+          onDeleteItem={() => this.onDeleteItem()}
+          onDeleteNote={() => this.showDeleteDialog()}
+          switchToEditMode={(value: boolean) => this.switchToEditMode(value)}
+          isArrangeMode={this.props.noteStore!.header.listEditMode}
+        />
+        <View>{this.renderTitle()}</View>
+        <KeyboardAwareScrollView extraScrollHeight={70} extraHeight={70} enableOnAndroid={true}>
+          <View style={{ marginHorizontal: 10, marginBottom: 60 }}>{this.renderEditor()}</View>
+        </KeyboardAwareScrollView>
+        {this.renderDeleteDialog()}
       </Screen>
     )
   }

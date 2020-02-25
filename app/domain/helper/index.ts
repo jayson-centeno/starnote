@@ -28,3 +28,13 @@ export const resetDb = async () => {
   repo = container.get<IRepository>(DIName.NoteItemRepository)
   await repo.dropTable()
 }
+
+export const query = async () => {
+  var repo = container.get<IRepository>(DIName.NoteRepository)
+  var result = await repo.query({})
+  console.log(result)
+
+  repo = container.get<IRepository>(DIName.NoteItemRepository)
+  var result = await repo.query({})
+  console.log(result)
+}

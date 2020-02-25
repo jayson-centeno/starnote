@@ -38,7 +38,7 @@ export default withTheme((props: IHomeOptionProps) => {
 var style = StyleSheet.create({
   addButton: {
     position: 'absolute',
-    paddingBottom: 50,
+    paddingBottom: 60,
     height: '100%',
   },
 })

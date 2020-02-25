@@ -15,7 +15,7 @@ export default withTheme((props: any) => {
       selectionColor="#aaa"
       onChangeText={value => props.changeTitle(value)}
       style={style.titleInput}
-    ></TextInput>
+    />
   )
 })
 

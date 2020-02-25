@@ -17,3 +17,6 @@ export default createAppContainer(
 
 // import { resetDb } from './domain/helper'
 // resetDb()
+
+// import { query } from './domain/helper'
+// query()

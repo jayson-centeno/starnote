@@ -7,6 +7,7 @@ export default class NoteItemModel {
     rowIndex: rowIndex,
     createDate,
     modifiedDate,
+    selected,
   }: {
     id?: number
     noteId?: number
@@ -15,6 +16,7 @@ export default class NoteItemModel {
     rowIndex: number
     createDate?: number
     modifiedDate?: number
+    selected?: boolean //used only for tracking selected upon edit
   }) {
     this.id = id
     this.noteId = noteId
@@ -23,6 +25,7 @@ export default class NoteItemModel {
     this.rowIndex = rowIndex
     this.createDate = createDate
     this.modifiedDate = modifiedDate
+    this.selected = selected
   }
 
   id?: number
@@ -32,4 +35,5 @@ export default class NoteItemModel {
   rowIndex: number = 0
   createDate?: number
   modifiedDate?: number
+  selected?: boolean
 }

@@ -72,8 +72,8 @@ export default class DatabaseLayer {
     const params = Object.values(result)
 
     return await this.executeSql(sql, params).then(
-      ({ insertId }) => {
-        let output = this.find(insertId)
+      async ({ insertId }) => {
+        let output = await this.find(insertId)
         return DataTypes.toModelValue(this.columnMapping, output)
       },
       error => {

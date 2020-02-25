@@ -1,6 +1,7 @@
 import React from 'react'
 import { StatusBar, StyleSheet, View } from 'react-native'
 import { withTheme } from 'react-native-paper'
+import { ScrollView } from 'react-native-gesture-handler'
 
 export default withTheme((props: any) => {
   const { children } = props

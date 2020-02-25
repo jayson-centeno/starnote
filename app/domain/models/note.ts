@@ -1,5 +1,6 @@
 import { NoteType } from '../enums'
 import NoteItemModel from './noteItem'
+import { observable } from 'mobx'
 
 export default class NoteModel {
   constructor({
@@ -42,5 +43,5 @@ export default class NoteModel {
   createDate?: number
   modifiedDate?: number
   rank?: number
-  items?: Array<NoteItemModel>
+  @observable items?: Array<NoteItemModel>
 }

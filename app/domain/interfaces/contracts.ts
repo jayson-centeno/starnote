@@ -36,7 +36,7 @@ export interface IRepository {
   destroyAll(): any
   find(id: any): any
   findBy(where: any): any
-  query(options: any): any
+  query(options: IDefaultQueryOptions): any
 }
 
 export interface IDefaultQueryOptions {
