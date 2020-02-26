@@ -6,7 +6,6 @@ import { DIName, RECORD } from '../constants'
 import { unixDateConverter } from '../helper'
 import { NoteType } from '../enums'
 import NoteItemModel from '../models/noteItem'
-import { Item } from 'react-native-paper/lib/typescript/src/components/List/List'
 
 const defaults = {
   loading: false,
@@ -38,8 +37,16 @@ export class NoteStore {
     return this.header.notes.length > 0
   }
 
+  @action.bound resetIsNew() {
+    this.header.isNew = false
+  }
+
   @action.bound showDeleteDialog() {
     this.header.showDelete = true
+  }
+
+  @action.bound clearModel() {
+    this.header.noteModel = <NoteModel>{}
   }
 
   @action.bound addListItem(noteItemModel: NoteItemModel) {
@@ -79,7 +86,6 @@ export class NoteStore {
   }
 
   @action.bound checkedItem(noteItemModel: NoteItemModel, value: boolean) {
-    this.header.noteModel.items?.slice()
     const target = this.header.noteModel.items!.find(item => item.rowIndex == noteItemModel.rowIndex)
     if (target) {
       target.checked = value
@@ -92,7 +98,6 @@ export class NoteStore {
   }
 
   @action.bound async edit(model: NoteModel) {
-    this.header.isEditing = true
     this.header.isNew = false
 
     if (model.type == NoteType.List) {
@@ -113,7 +118,6 @@ export class NoteStore {
   }
 
   @action.bound add(model: NoteModel) {
-    this.header.isEditing = true
     this.header.isNew = true
 
     if (model.type == NoteType.List) {
@@ -128,13 +132,14 @@ export class NoteStore {
       return
     }
 
+    console.log('load notes')
+
     this.header.loading = true
     var all = await this.noteService.getAll({
       order: 'modifiedDate DESC',
-      limit: RECORD.defaultLimit,
+      limit: 10,
       page: RECORD.defaultPage,
     })
-    // console.log(all)
     if (all && all.data.length > 0) {
       let tempNotes = all.data.map((noteModel: any) => new NoteModel({ ...noteModel }))
 
@@ -164,6 +169,11 @@ export class NoteStore {
     this.header.loading = false
   }
 
+  @action.bound removeNoteFromNotes(model: NoteModel) {
+    const target = this.header.notes.findIndex(data => data.id == model.id)
+    this.header.notes.splice(target, 1)
+  }
+
   @action.bound async delete(noteModel: NoteModel) {
     if (this.header.loading) {
       return
@@ -171,29 +181,32 @@ export class NoteStore {
 
     this.header.loading = true
 
-    const resultItems = await this.noteItemService.getAll({
-      where: {
-        noteId_eq: noteModel.id,
-      },
-    })
+    if (noteModel.type == NoteType.List) {
+      const resultItems = await this.noteItemService.getAll({
+        where: {
+          noteId_eq: noteModel.id,
+        },
+      })
 
-    if (resultItems.successful) {
-      //delete if it has items
-      if (resultItems && resultItems.data.length > 0) {
-        resultItems.data.forEach(async (item: NoteItemModel) => await this.noteItemService.delete(item))
-      }
-
-      var result = await this.noteService.delete(<NoteModel>{ ...noteModel })
-      if (result.successful) {
-        this.header.loading = false
-        this.header.isEditing = false
-        this.header.isNew = false
-        this.header.noteModel = <NoteModel>{}
-        this.header.showAddOption = true
-
-        if (result.successful) {
-          return true
+      if (resultItems.successful) {
+        //delete if it has items
+        if (resultItems && resultItems.data.length > 0) {
+          resultItems.data.forEach(async (item: NoteItemModel) => await this.noteItemService.delete(item))
         }
+      }
+    }
+
+    var result = await this.noteService.delete(<NoteModel>{ ...noteModel })
+    if (result.successful) {
+      this.header.loading = false
+      this.header.isEditing = false
+      this.header.isNew = false
+      this.header.noteModel = <NoteModel>{}
+      this.header.showAddOption = true
+
+      if (result.successful) {
+        this.removeNoteFromNotes(noteModel)
+        return true
       }
     }
 
@@ -205,28 +218,33 @@ export class NoteStore {
       return
     }
 
+    if (!this.header.isEditing) {
+      return
+    }
+
     this.header.loading = true
+
+    let tempModel = { ...this.header.noteModel }
 
     //make sure one of the field has value
     if (!this.header.noteModel.title) {
-      this.header.noteModel.title = unixDateConverter(Date.now())
+      tempModel.title = unixDateConverter(Date.now())
     } else {
-      this.header.noteModel.title = this.header.noteModel.title.trim()
+      tempModel.title = this.header.noteModel.title.trim()
     }
 
     //New record
-    const isNewRecord =
-      this.header.noteModel.id === null || this.header.noteModel.id === 0 || this.header.noteModel.id === undefined
+    const isNewRecord = !tempModel.id || tempModel.id === 0
+
     if (isNewRecord) {
-      this.header.noteModel.createDate = Date.now()
-      this.header.noteModel.modifiedDate = Date.now()
+      tempModel.createDate = Date.now()
+      tempModel.modifiedDate = Date.now()
 
-      var result = await this.noteService.add(<NoteModel>{ ...this.header.noteModel })
+      var result = await this.noteService.add(<NoteModel>{ ...tempModel })
       if (result.successful) {
-        console.log('New Note successful', result)
-
-        if (this.header.noteModel.type == NoteType.List) {
-          this.header.noteModel.items?.forEach(async item => {
+        tempModel = { ...result.data }
+        if (tempModel.type == NoteType.List) {
+          tempModel.items?.forEach(async item => {
             await this.noteItemService.add(<NoteItemModel>{
               noteId: result.data.id,
               rowIndex: item.rowIndex,
@@ -241,25 +259,29 @@ export class NoteStore {
         }
       }
 
+      this.header.notes.push(tempModel)
+      //update state
+      this.header.noteModel = tempModel
+
       //Update record
     } else {
+      let tempModel = { ...this.header.noteModel }
+
       if (
-        this.header.noteModel.title === this.header.oldNoteModel.title &&
-        this.header.noteModel.content === this.header.oldNoteModel.content &&
-        this.header.noteModel.rank === this.header.oldNoteModel.rank &&
-        this.header.noteModel.type == NoteType.Note
+        tempModel.title === this.header.oldNoteModel.title &&
+        tempModel.content === this.header.oldNoteModel.content &&
+        tempModel.rank === this.header.oldNoteModel.rank &&
+        tempModel.type == NoteType.Note
       ) {
         this.header.isEditing = false
         this.header.loading = false
         return
       }
 
-      this.header.noteModel.modifiedDate = Date.now()
-      var result = await this.noteService.update(<NoteModel>{ ...this.header.noteModel })
+      tempModel.modifiedDate = Date.now()
+      var result = await this.noteService.update(<NoteModel>{ ...tempModel })
       if (result.successful) {
-        console.log(this.header.noteModel.id)
-
-        if (this.header.noteModel.type == NoteType.List) {
+        if (tempModel.type == NoteType.List) {
           //delete the items already exists
           const result = await this.noteItemService.getAll({
             where: {
@@ -274,9 +296,9 @@ export class NoteStore {
               })
             }
 
-            this.header.noteModel.items?.forEach(async item => {
+            tempModel.items?.forEach(async item => {
               await this.noteItemService.add(<NoteItemModel>{
-                noteId: this.header.noteModel.id,
+                noteId: tempModel.id,
                 rowIndex: item.rowIndex,
                 checked: item.checked,
                 title: item.title,
@@ -288,6 +310,7 @@ export class NoteStore {
         }
       }
 
+      // this.header.noteModel = tempModel
       console.log('New update successful')
     }
 

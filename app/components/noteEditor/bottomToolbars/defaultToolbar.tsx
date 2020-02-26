@@ -7,16 +7,25 @@ interface INoteToolbar {
   theme: Theme
   onShowDeleteDialog: () => void
   visible: boolean
+  onSave: () => void
+  isEdit: boolean
 }
 
 export default withTheme((props: INoteToolbar) => {
+  const renderSave = () => {
+    if (props.isEdit) {
+      return <Appbar.Action size={28} icon="check-circle" onPress={() => props.onSave()} />
+    }
+    return
+  }
+
   if (props.visible) {
     return (
       <Appbar theme={props.theme} style={[globalStyle.rightContent, styles.bottom]}>
+        {renderSave()}
         <Appbar.Action icon="favorite" onPress={() => console.log('Pressed archive')} />
         <Appbar.Action icon="star" onPress={() => console.log('Pressed archive')} />
         <Appbar.Action icon="alarm" onPress={() => console.log('Pressed mail')} />
-        <Appbar.Action icon="label" onPress={() => console.log('Pressed label')} />
         <Appbar.Action icon="delete" onPress={() => props.onShowDeleteDialog()} />
       </Appbar>
     )

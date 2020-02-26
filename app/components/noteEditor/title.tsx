@@ -22,12 +22,10 @@ export default withTheme((props: any) => {
 var style = StyleSheet.create({
   titleInput: {
     color: '#000',
-    backgroundColor: '#ddd',
+    backgroundColor: '#fff',
     borderColor: '#ccc',
     borderWidth: 1,
     fontSize: 20,
-    borderTopLeftRadius: 5,
-    borderTopRightRadius: 5,
     paddingVertical: 10,
     paddingHorizontal: 10,
     margin: 0,

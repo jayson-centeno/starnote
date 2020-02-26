@@ -17,8 +17,9 @@ export default createDrawerNavigator(
     drawerPosition: 'right',
     drawerType: 'slide',
     contentComponent: Navigator,
-    keyboardDismissMode: 'none',
-    unmountInactiveRoutes: true,
+    keyboardDismissMode: 'on-drag',
+    drawerLockMode: 'locked-closed',
+    unmountInactiveRoutes: false,
     drawerWidth: () => {
       return Dimensions.get('window').width
     },

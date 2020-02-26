@@ -15,18 +15,11 @@ import NoteItemModel from '../domain/models/noteItem'
 @inject(STORES.NoteStore)
 @observer
 class Home extends React.Component<IHomeProps, IHomeState> {
-  backHandler: any
-
   constructor(props: any) {
     super(props)
   }
 
-  handleBackPress = async () => {
-    return false
-  }
-
   componentDidMount = async () => {
-    this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBackPress.bind(this))
     this.props.noteStore.header.showAddOption = true
     await this.props.noteStore.loadNotes()
   }
@@ -37,7 +30,7 @@ class Home extends React.Component<IHomeProps, IHomeState> {
 
   editClicked = (note: NoteModel) => {
     this.props.noteStore.edit(note)
-    this.props.navigation.toggleDrawer()
+    this.props.navigation.openDrawer()
     this.props.noteStore.header.showAddOption = false
   }
 
@@ -51,7 +44,7 @@ class Home extends React.Component<IHomeProps, IHomeState> {
       })
     )
     this.props.noteStore.header.showAddOption = false
-    this.props.navigation.toggleDrawer()
+    this.props.navigation.openDrawer()
   }
 
   renderNotes = (): React.ReactNode => {

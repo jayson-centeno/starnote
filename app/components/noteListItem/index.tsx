@@ -15,7 +15,7 @@ export default withTheme((props: INoteListemProps) => {
   const renderContent = () => <Paragraph style={{ padding: 0, margin: 0 }}>{truncate(props.note.content!)}</Paragraph>
   const renderListItems = () => {
     if (props.note.items && props.note.items.length > 0) {
-      return props.note.items.map(itm => (
+      return props.note.items.slice(0, 3).map(itm => (
         <Paragraph key={itm.rowIndex} style={[{ padding: 0, margin: 0 }, itm.checked ? style.textInputChecked : {}]}>
           {truncate(itm.title)}
         </Paragraph>

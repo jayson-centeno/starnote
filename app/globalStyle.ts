@@ -25,6 +25,9 @@ export default StyleSheet.create({
   flex: {
     flex: 1,
   },
+  relative: {
+    position: 'relative',
+  },
   innerScreen: {
     paddingHorizontal: 5,
     paddingVertical: 5,

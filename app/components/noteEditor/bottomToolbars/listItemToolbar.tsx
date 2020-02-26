@@ -1,6 +1,6 @@
 import React from 'react'
-import { withTheme, Appbar, Theme } from 'react-native-paper'
 import { StyleSheet } from 'react-native'
+import { Appbar, Theme, withTheme } from 'react-native-paper'
 import globalStyle from '../../../globalStyle'
 
 interface IListItemToolbar {
@@ -8,10 +8,12 @@ interface IListItemToolbar {
   onAddItem: () => void
   onDeleteItem: () => void
   onDeleteNote: () => void
+  onSave: () => void
   switchToEditMode: (value: boolean) => void
   isArrangeMode: boolean
   visible: boolean
   isNewNote: boolean
+  isEdit: boolean
 }
 
 export default withTheme((props: IListItemToolbar) => {
@@ -22,9 +24,17 @@ export default withTheme((props: IListItemToolbar) => {
     return
   }
 
+  const renderSave = () => {
+    if (props.isEdit) {
+      return <Appbar.Action size={28} icon="check-circle" onPress={() => props.onSave()} />
+    }
+    return
+  }
+
   if (props.visible) {
     return (
       <Appbar theme={props.theme} style={[globalStyle.rightContent, styles.bottom]}>
+        {renderSave()}
         {renderDeleteNote()}
         <Appbar.Action size={28} icon="unfold-more" onPress={() => props.switchToEditMode(!props.isArrangeMode)} />
         <Appbar.Action size={28} icon="clear" onPress={() => props.onDeleteItem()} />
@@ -42,6 +52,5 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     zIndex: 9999,
-    opacity: 0.8,
   },
 })

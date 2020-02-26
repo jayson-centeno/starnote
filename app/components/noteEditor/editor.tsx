@@ -1,13 +1,21 @@
 import React from 'react'
-import { withTheme } from 'react-native-paper'
+import { withTheme, Theme } from 'react-native-paper'
 import { StyleSheet, TextInput } from 'react-native'
+import NoteModel from 'app/domain/models/note'
 
-export default withTheme((props: any) => {
+interface INoteEditor {
+  noteModel: NoteModel
+  onTitleFocus: () => void
+  onChangeContent: (content: string) => void
+  theme: Theme
+}
+
+export default withTheme((props: INoteEditor) => {
   return (
     <TextInput
       defaultValue={props.noteModel.content}
       multiline={true}
-      onFocus={(e: any) => props.onTitleFocus()}
+      onFocus={() => props.onTitleFocus()}
       placeholderTextColor="#aaa"
       disableFullscreenUI={true}
       selectionColor="#aaa"
@@ -26,6 +34,8 @@ const styles = StyleSheet.create({
     borderTopWidth: 0,
     height: '100%',
     zIndex: 0,
-    paddingVertical: 10,
+    paddingTop: 5,
+    paddingRight: 10,
+    paddingLeft: 10,
   },
 })
