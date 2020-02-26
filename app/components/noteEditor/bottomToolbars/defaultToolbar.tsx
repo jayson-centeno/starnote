@@ -23,10 +23,10 @@ export default withTheme((props: INoteToolbar) => {
     return (
       <Appbar theme={props.theme} style={[globalStyle.rightContent, styles.bottom]}>
         {renderSave()}
-        <Appbar.Action icon="favorite" onPress={() => console.log('Pressed archive')} />
-        <Appbar.Action icon="star" onPress={() => console.log('Pressed archive')} />
-        <Appbar.Action icon="alarm" onPress={() => console.log('Pressed mail')} />
-        <Appbar.Action icon="delete" onPress={() => props.onShowDeleteDialog()} />
+        <Appbar.Action size={28} icon="favorite" onPress={() => console.log('Pressed archive')} />
+        <Appbar.Action size={28} icon="star" onPress={() => console.log('Pressed archive')} />
+        <Appbar.Action size={28} icon="alarm" onPress={() => console.log('Pressed mail')} />
+        <Appbar.Action size={28} icon="delete" onPress={() => props.onShowDeleteDialog()} />
       </Appbar>
     )
   }

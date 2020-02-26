@@ -12,8 +12,9 @@ interface IListProps {
   theme: Theme
   items: Array<NoteItemModel>
   listEditMode: boolean
-  onSelectItem: (data: NoteItemModel) => void
   onItemChecked: (data: NoteItemModel, value: boolean) => void
+  onItemEdit: () => void
+  onDeleteItem: (data: NoteItemModel) => void
 }
 
 export default withTheme((props: IListProps) => {
@@ -67,15 +68,21 @@ export default withTheme((props: IListProps) => {
       return
     }
     return props.items.map((data: NoteItemModel, index: number) => (
-      <TouchableWithoutFeedback onPressIn={() => props.onSelectItem(data)} style={[styles.mainWrapper]} key={index}>
+      <TouchableWithoutFeedback style={[styles.mainWrapper]} key={index}>
+        <View style={[styles.iconWrapper, globalStyle.rightContent, globalStyle.centerContent]}>
+          <Icon name="clear" style={{ marginTop: 5 }} color="#FF7F00" onPress={() => props.onDeleteItem(data)} />
+        </View>
         <View style={[styles.inputWrapper, globalStyle.leftContent]}>
           <TextInput
             defaultValue={data.title}
             placeholderTextColor="#aaa"
             disableFullscreenUI={true}
-            autoFocus={false}
+            autoFocus={true}
             placeholder="Type your note here."
-            onChangeText={value => (data.title = value)}
+            onChangeText={value => {
+              data.title = value
+              props.onItemEdit()
+            }}
             style={[styles.textInput, data.checked ? styles.textInputChecked : {}]}
           />
         </View>
@@ -83,7 +90,6 @@ export default withTheme((props: IListProps) => {
           <Icon
             name={data.checked ? 'check-circle' : 'radio-button-unchecked'}
             color={props.theme.colors.background}
-            size={30}
             onPress={() => props.onItemChecked(data, !data.checked)}
           />
         </View>
@@ -134,7 +140,9 @@ const styles = StyleSheet.create({
   textInput: {
     fontSize: 16,
     paddingRight: 10,
+    paddingTop: 1,
     width: '100%',
+    textAlignVertical: 'top',
   },
   textInputChecked: {
     textDecorationLine: 'line-through',

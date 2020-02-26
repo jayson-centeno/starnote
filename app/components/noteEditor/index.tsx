@@ -88,6 +88,10 @@ class Note extends Component<INoteProps, any> {
     this.props.noteStore!.header.noteModel.content = value
   }
 
+  onItemEdit = () => {
+    this.props.noteStore!.header.isEditing = true
+  }
+
   onDelete = async (value: boolean) => {
     if (value) {
       const result = await this.props.noteStore!.delete(this.props.noteStore!.header.noteModel)
@@ -114,13 +118,9 @@ class Note extends Component<INoteProps, any> {
     )
   }
 
-  onSelectItem = (seletedModel: NoteItemModel): void => {
-    this.props.noteStore!.selectItem(seletedModel)
-  }
-
-  onDeleteItem = (): void => {
+  onDeleteItem = (item: NoteItemModel): void => {
     this.props.noteStore!.header.isEditing = true
-    this.props.noteStore!.removeSelectedItem()
+    this.props.noteStore!.removeSelectedItem(item)
   }
 
   switchToEditMode = (value: boolean) => (this.props.noteStore!.header.listEditMode = value)
@@ -151,9 +151,10 @@ class Note extends Component<INoteProps, any> {
         <KeyboardAwareScrollView extraScrollHeight={70} extraHeight={70} enableOnAndroid={true}>
           <View style={[styles.editorWrapper]}>
             <ListNote
+              onDeleteItem={data => this.onDeleteItem(data)}
+              onItemEdit={() => this.onItemEdit()}
               listEditMode={this.props.noteStore!.header.listEditMode}
               items={this.props.noteStore!.header.noteModel.items!?.slice()}
-              onSelectItem={(model: NoteItemModel) => this.onSelectItem(model)}
               onItemChecked={(selectedModel: NoteItemModel, value: boolean) => this.onItemChecked(selectedModel, value)}
             />
           </View>
@@ -177,7 +178,6 @@ class Note extends Component<INoteProps, any> {
           isNewNote={this.props.noteStore!.header.isNew}
           visible={this.props.noteStore!.header.noteModel.type == NoteType.List}
           onAddItem={() => this.onAddItem()}
-          onDeleteItem={() => this.onDeleteItem()}
           onDeleteNote={() => this.showDeleteDialog()}
           switchToEditMode={(value: boolean) => this.switchToEditMode(value)}
           isArrangeMode={this.props.noteStore!.header.listEditMode}

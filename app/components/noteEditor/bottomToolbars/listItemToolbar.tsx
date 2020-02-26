@@ -6,7 +6,6 @@ import globalStyle from '../../../globalStyle'
 interface IListItemToolbar {
   theme: Theme
   onAddItem: () => void
-  onDeleteItem: () => void
   onDeleteNote: () => void
   onSave: () => void
   switchToEditMode: (value: boolean) => void
@@ -36,8 +35,9 @@ export default withTheme((props: IListItemToolbar) => {
       <Appbar theme={props.theme} style={[globalStyle.rightContent, styles.bottom]}>
         {renderSave()}
         {renderDeleteNote()}
+        <Appbar.Action size={28} icon="favorite" onPress={() => console.log('Pressed archive')} />
+        <Appbar.Action size={28} icon="star" onPress={() => console.log('Pressed archive')} />
         <Appbar.Action size={28} icon="unfold-more" onPress={() => props.switchToEditMode(!props.isArrangeMode)} />
-        <Appbar.Action size={28} icon="clear" onPress={() => props.onDeleteItem()} />
         <Appbar.Action size={28} icon="add-circle-outline" onPress={() => props.onAddItem()} />
       </Appbar>
     )

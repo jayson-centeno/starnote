@@ -31,13 +31,13 @@ export default withTheme((props: INoteListemProps) => {
         <Card.Content style={{ padding: 0, margin: 0 }}>
           {props.note.type == NoteType.Note ? renderContent() : renderListItems()}
         </Card.Content>
-        <Card.Actions style={{ paddingTop: 10, paddingLeft: 0, margin: 0, paddingRight: 15 }}>
+        <Card.Actions style={{ paddingTop: 10, paddingLeft: 0, margin: 0, paddingRight: 0 }}>
           <Caption
             style={{
-              marginLeft: 15,
+              marginLeft: 0,
               paddingBottom: 0,
               paddingTop: 5,
-              paddingRight: 15,
+              paddingRight: 0,
               borderTopColor: '#ccc',
               borderTopWidth: 1,
               flex: 1,
@@ -54,8 +54,11 @@ export default withTheme((props: INoteListemProps) => {
 
 var style = StyleSheet.create({
   surface: {
+    flex: 0.5,
     marginBottom: 10,
     borderColor: '#aaa',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   textInputChecked: {
     textDecorationLine: 'line-through',

@@ -78,8 +78,8 @@ export class NoteStore {
     }
   }
 
-  @action.bound removeSelectedItem() {
-    const notSeletedItems = this.header.noteModel.items?.filter(item => !item.selected)
+  @action.bound removeSelectedItem(item: NoteItemModel) {
+    const notSeletedItems = this.header.noteModel.items?.filter(data => data.rowIndex != item.rowIndex)
     if (notSeletedItems) {
       this.header.noteModel.items = notSeletedItems
     }
@@ -242,7 +242,7 @@ export class NoteStore {
 
       var result = await this.noteService.add(<NoteModel>{ ...tempModel })
       if (result.successful) {
-        tempModel = { ...result.data }
+        tempModel.id = result.data.id
         if (tempModel.type == NoteType.List) {
           tempModel.items?.forEach(async item => {
             await this.noteItemService.add(<NoteItemModel>{
@@ -265,8 +265,6 @@ export class NoteStore {
 
       //Update record
     } else {
-      let tempModel = { ...this.header.noteModel }
-
       if (
         tempModel.title === this.header.oldNoteModel.title &&
         tempModel.content === this.header.oldNoteModel.content &&

@@ -20,7 +20,7 @@ export default withTheme((props: INoteEditor) => {
       disableFullscreenUI={true}
       selectionColor="#aaa"
       textAlignVertical="top"
-      autoFocus={true}
+      autoFocus={false}
       placeholder="Type your Notes here!"
       style={styles.contentInput}
       onChangeText={value => props.onChangeContent(value)}

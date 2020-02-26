@@ -10,7 +10,7 @@ export default withTheme((props: any) => {
       placeholder="Type the Title here!"
       placeholderTextColor="#888"
       disableFullscreenUI={true}
-      autoFocus={props.isEditing}
+      autoFocus={true}
       selectTextOnFocus={false}
       selectionColor="#aaa"
       onChangeText={value => props.changeTitle(value)}

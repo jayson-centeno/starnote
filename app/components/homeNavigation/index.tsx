@@ -4,7 +4,7 @@ import { TouchableWithoutFeedback } from 'react-native-gesture-handler'
 import Icon from '../Icon'
 import globalStyle from '../../globalStyle'
 import { Title } from 'react-native-paper'
-// import HomeHeaderRight from './headerRight'
+import HomeHeaderRight from './headerRight'
 
 export default ({ navigation }: any) => {
   const { title, icon } = {
@@ -34,7 +34,7 @@ export default ({ navigation }: any) => {
         </View>
       </TouchableWithoutFeedback>
     ),
-    // headerRight: <HomeHeaderRight navigation />,
+    headerRight: <HomeHeaderRight navigation />,
     headerStyle: {
       height: 30,
       backgroundColor: '#000',
