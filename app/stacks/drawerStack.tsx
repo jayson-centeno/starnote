@@ -7,9 +7,6 @@ export default createDrawerNavigator(
   {
     Notes: {
       screen: TabNavigator,
-      navigationOptions: {
-        // drawerLockMode: 'locked-closed',
-      },
     },
   },
   {

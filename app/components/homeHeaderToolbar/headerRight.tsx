@@ -6,6 +6,7 @@ import Icon from '../Icon'
 import globalStyle from '../../globalStyle'
 import { inject, observer } from 'mobx-react'
 import { STORES } from '../../domain/constants'
+import { CardView } from '../../domain/enums'
 
 interface IHomeHeaderRightProps {
   navigation: any
@@ -16,6 +17,11 @@ interface IHomeHeaderRightProps {
 const headerNav = withTheme((props: IHomeHeaderRightProps) => {
   const [showOptions, setShowOptions] = React.useState(false)
   const [viewOptions, setViewOptions] = React.useState(false)
+
+  const setCardView = (cardView: CardView) => {
+    props.noteStore?.setCardView(cardView)
+    setViewOptions(false)
+  }
 
   return (
     <View style={[globalStyle.flexRow]}>
@@ -28,8 +34,8 @@ const headerNav = withTheme((props: IHomeHeaderRightProps) => {
           onDismiss={() => setViewOptions(false)}
           anchor={<Icon name="view-headline" onPress={() => setViewOptions(true)} />}
         >
-          <Menu.Item onPress={() => setViewOptions(false)} title="Grid View" />
-          <Menu.Item onPress={() => setViewOptions(false)} title="List View" />
+          <Menu.Item icon={'view-stream'} onPress={() => setCardView(CardView.ListView)} title="List View" />
+          <Menu.Item icon={'view-column'} onPress={() => setCardView(CardView.GridView)} title="Grid View" />
         </Menu>
       </View>
       <View style={{ marginRight: 10, marginBottom: 15 }}>

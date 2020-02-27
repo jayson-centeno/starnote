@@ -5,7 +5,7 @@ import Settings from '../screens/settings'
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs'
 import TabBarIcon from '../components/tabBarIcon'
 import { createStackNavigator } from 'react-navigation-stack'
-import Navigation from '../components/homeNavigation'
+import Navigation from '../components/homeHeaderToolbar'
 import ThemeScreen from '../screens/theme'
 import { NAVIGATION } from '../domain/constants'
 

@@ -14,6 +14,9 @@ export const THEME = {
     backdrop: 'rgba(0,0,0,0.7)',
     background: '#333',
     accent: '#FFD4AA',
+    animation: {
+      scale: 0,
+    },
   },
 }
 

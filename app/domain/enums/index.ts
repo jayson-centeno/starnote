@@ -10,3 +10,8 @@ export enum NoteItemOptions {
   Delete,
   Calculator,
 }
+
+export enum CardView {
+  ListView,
+  GridView,
+}

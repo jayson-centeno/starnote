@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, BackHandler } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 import Screen from '../components/screen'
 import globalStyle from '../globalStyle'
 import { NoteType } from '../domain/enums'
@@ -8,9 +8,9 @@ import { observer, inject } from 'mobx-react'
 import { STORES } from '../domain/constants'
 import { IHomeState, IHomeProps } from '../domain/interfaces/components'
 import NoteModel from '../domain/models/note'
-import NoteListItem from '../components/noteListItem'
-import HomeOptions from '../components/homeOptions'
+import HomeOptions from '../components/homeAddOptions'
 import NoteItemModel from '../domain/models/noteItem'
+import NoteCards from '../components/noteCards'
 
 @inject(STORES.NoteStore)
 @observer
@@ -20,7 +20,6 @@ class Home extends React.Component<IHomeProps, IHomeState> {
   }
 
   componentDidMount = async () => {
-    this.props.noteStore.header.showAddOption = true
     await this.props.noteStore.loadNotes()
   }
 
@@ -28,10 +27,12 @@ class Home extends React.Component<IHomeProps, IHomeState> {
     return this.props.theme
   }
 
-  editClicked = (note: NoteModel) => {
-    this.props.noteStore.edit(note)
-    this.props.navigation.openDrawer()
-    this.props.noteStore.header.showAddOption = false
+  editClicked = async (note: NoteModel) => {
+    const result = await this.props.noteStore.edit(note)
+    if (result) {
+      this.props.navigation.openDrawer()
+      this.props.noteStore.header.showAddOption = false
+    }
   }
 
   newNoteClicked = (type: NoteType): void => {
@@ -47,20 +48,20 @@ class Home extends React.Component<IHomeProps, IHomeState> {
     this.props.navigation.openDrawer()
   }
 
-  renderNotes = (): React.ReactNode => {
-    const { notes } = this.props.noteStore.header
-    if (notes.length > 0) {
-      return notes.map((note: NoteModel) => (
-        <NoteListItem key={note.id} note={note} editClicked={(model: NoteModel) => this.editClicked(model)} />
-      ))
-    }
-    return
-  }
-
   render() {
+    const { notes } = this.props.noteStore.header
     return (
       <Screen title="Star Notes" hideStatus={false}>
-        <ScrollView style={[globalStyle.innerScreen, { position: 'relative' }]}>{this.renderNotes()}</ScrollView>
+        <View style={[globalStyle.innerScreen]}>
+          <View style={[style.surface]}>
+            <NoteCards
+              theme={this.Theme}
+              editClicked={(model: NoteModel) => this.editClicked(model)}
+              notes={notes}
+              cardView={this.props.noteStore.header.cardView}
+            ></NoteCards>
+          </View>
+        </View>
         <HomeOptions
           showOption={this.props.noteStore.header.showAddOption}
           newNoteClicked={noteType => this.newNoteClicked(noteType)}
@@ -71,3 +72,9 @@ class Home extends React.Component<IHomeProps, IHomeState> {
 }
 
 export default withTheme(Home)
+
+var style = StyleSheet.create({
+  surface: {
+    marginBottom: 10,
+  },
+})

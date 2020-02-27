@@ -4,7 +4,7 @@ import { observable, action, computed } from 'mobx'
 import { container } from '../di'
 import { DIName, RECORD } from '../constants'
 import { unixDateConverter } from '../helper'
-import { NoteType } from '../enums'
+import { NoteType, CardView } from '../enums'
 import NoteItemModel from '../models/noteItem'
 
 const defaults = {
@@ -14,12 +14,13 @@ const defaults = {
   isEditing: false,
   isNew: false,
   loaded: false,
-  showAddOption: false,
+  showAddOption: true,
   showDelete: false,
   oldNoteModel: <NoteModel>{},
   listEditMode: false,
   noteModel: <NoteModel>{},
   notes: Array<NoteModel>(),
+  cardView: CardView.ListView,
 }
 
 export class NoteStore {
@@ -43,6 +44,10 @@ export class NoteStore {
 
   @action.bound showDeleteDialog() {
     this.header.showDelete = true
+  }
+
+  @action.bound setCardView(cardView: CardView) {
+    this.header.cardView = cardView
   }
 
   @action.bound clearModel() {
@@ -97,7 +102,7 @@ export class NoteStore {
     this.header.noteModel.items = this.header.noteModel.items!.filter(_obj => true)
   }
 
-  @action.bound async edit(model: NoteModel) {
+  @action.bound async edit(model: NoteModel): Promise<boolean> {
     this.header.isNew = false
 
     if (model.type == NoteType.List) {
@@ -115,6 +120,8 @@ export class NoteStore {
 
     this.header.oldNoteModel = <NoteModel>{ ...model }
     this.header.noteModel = model
+
+    return true
   }
 
   @action.bound add(model: NoteModel) {
@@ -132,12 +139,12 @@ export class NoteStore {
       return
     }
 
-    console.log('load notes')
+    console.log('load notes start', new Date().getSeconds())
 
     this.header.loading = true
     var all = await this.noteService.getAll({
       order: 'modifiedDate DESC',
-      limit: 10,
+      limit: 5,
       page: RECORD.defaultPage,
     })
     if (all && all.data.length > 0) {
@@ -165,6 +172,8 @@ export class NoteStore {
     } else {
       this.header.notes = Array<NoteModel>()
     }
+
+    console.log('load notes end', new Date().getSeconds())
 
     this.header.loading = false
   }

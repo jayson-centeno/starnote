@@ -57,7 +57,7 @@ class Note extends Component<INoteProps, any> {
 
     if (this.props.navigation.state.isDrawerOpen) {
       this.props.navigation.closeDrawer()
-      this.props.noteStore!.clearModel()
+      // this.props.noteStore!.clearModel()
       this.props.noteStore!.header.showAddOption = true
       return true
     }
